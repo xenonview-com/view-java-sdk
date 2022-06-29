@@ -12,6 +12,8 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
+import xenon.view.sdk.api.fetch.Fetchable;
+import xenon.view.sdk.api.fetch.Json;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -19,8 +21,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(Ginkgo4jRunner.class)
@@ -47,8 +48,24 @@ public class ApiBaseTest {
                         assertEquals("ApiBase", body.get("name"));
                         assertEquals("{}", body.getJSONObject("parameters").toString());
                         JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-//                        assertEquals("application/json", requestHeaders.get("accept"));
                         assertEquals("application/json", requestHeaders.get("content-type"));
+                        return true;
+                    }));
+                });
+            });
+            Describe("when calling fetch with default api and ignoring self signed certs", () -> {
+                BeforeEach(() -> {
+                    Map<String, Object> props = new Hashtable<String, Object>() {{
+                        put("apiUrl", apiUrl);
+                    }};
+                    unit.set(new ApiBase(props, jsonFetcher));
+                    unit.get().fetch(new JSONObject(){{
+                        put("ignore-certificate-errors", true);
+                    }});
+                });
+                It("requests base url and ignores self signed certs", () -> {
+                    verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
+                        assertTrue(params.getBoolean("ignore-certificate-errors"));
                         return true;
                     }));
                 });
@@ -76,7 +93,6 @@ public class ApiBaseTest {
                         JSONObject body = params.getJSONObject("body");
                         assertEquals("name", body.get("name"));
                         JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-//                        assertEquals("application/json", requestHeaders.get("accept"));
                         assertEquals("application/json", requestHeaders.get("content-type"));
                         assertEquals("header", requestHeaders.get("header"));
                         return true;
@@ -99,7 +115,6 @@ public class ApiBaseTest {
                     It("requests url", () -> {
                         verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
                             JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-//                              assertEquals("application/json", requestHeaders.get("accept"));
                             assertEquals("application/json", requestHeaders.get("content-type"));
                             assertEquals("Bearer <anAccessToken>", requestHeaders.get("authorization"));
                             return true;
@@ -116,7 +131,7 @@ public class ApiBaseTest {
                         JSONObject fetchParams = new JSONObject();
                         unit.get().fetch(fetchParams).exceptionally((err) -> {
                             error.set(err);
-                            return new JSONObject();
+                            return new Json("");
                         }).get();
                     });
                     It("rejects the promise", () -> {
@@ -135,7 +150,7 @@ public class ApiBaseTest {
                         }};
                         unit.get().fetch(fetchParams).exceptionally((err) -> {
                             error.set(err);
-                            return new JSONObject();
+                            return new Json("");
                         }).get();
                     });
                     It("rejects the promise", () -> {
@@ -232,7 +247,7 @@ public class ApiBaseTest {
                     unit.set(new TestApi());
                     unit.get().fetch(new JSONObject()).exceptionally((err) -> {
                         error.set(err);
-                        return new JSONObject();
+                        return new Json("");
                     }).get();
                 });
                 It("rejects the promise", () -> {

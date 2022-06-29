@@ -36,6 +36,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     //implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.json:json:20220320'
+    implementation 'com.squareup.okhttp3:okhttp:4.+'
 
     // This dependency is used internally for testing only, and not exposed to consumers on their own compile classpath.
     testImplementation 'com.github.paulcwarren:ginkgo4j:1.+'

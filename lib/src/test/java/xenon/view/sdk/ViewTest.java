@@ -13,7 +13,8 @@ import org.json.JSONObject;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import xenon.view.sdk.api.Api;
-import xenon.view.sdk.api.Fetchable;
+import xenon.view.sdk.api.fetch.Fetchable;
+import xenon.view.sdk.api.fetch.Json;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -23,8 +24,7 @@ import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 class ApiType implements Api<Fetchable> {
@@ -42,10 +42,10 @@ public class ViewTest {
             final String apiUrl = "https://localhost";
             final Fetchable JourneyFetcher = mock(Fetchable.class);
             final Api<Fetchable> JourneyApi = mock(ApiType.class);
-            final CompletableFuture<JSONObject> journeyFuture = new CompletableFuture<>();
+            final CompletableFuture<Json> journeyFuture = new CompletableFuture<>();
             final Fetchable DeanonFetcher = mock(Fetchable.class);
             final Api<Fetchable> DeanonApi = mock(ApiType.class);
-            final CompletableFuture<JSONObject> deanonFuture = new CompletableFuture<>();
+            final CompletableFuture<Json> deanonFuture = new CompletableFuture<>();
             AtomicReference<View> unit = new AtomicReference<>(null);
             AtomicReference<String> journeyStr = new AtomicReference<>("");
             BeforeEach(() -> {
@@ -60,6 +60,16 @@ public class ViewTest {
             });
             It("then has default id", () -> {
                 assertNotEquals("", unit.get().id());
+            });
+            It("can be constructed using self signed cert", () -> {
+              View v1 = new View(apiKey, true);
+              View v2 = new View(apiKey, apiUrl, true);
+              View v3 = new View(apiKey, apiUrl, JourneyApi, true);
+              View v4 = new View(apiKey, apiUrl, JourneyApi, DeanonApi, true);
+              assertTrue(v1.selfSignedAllowed());
+              assertTrue(v2.selfSignedAllowed());
+              assertTrue(v3.selfSignedAllowed());
+              assertTrue(v4.selfSignedAllowed());
             });
             Describe("when id set", () -> {
                 final String testId = "<some random uuid>";
@@ -132,19 +142,72 @@ public class ViewTest {
                     ));
                 });
             });
-            Describe("when adding duplicate event", () -> {
+            Describe("when adding two events", () -> {
                 final JSONObject event = (new JSONObject())
                         .put("funnel", "funnel")
                         .put("action", "test");
-                BeforeEach(() -> {
-                    unit.get().event(event);
-                    unit.get().event(event);
+                final JSONObject event2 = (new JSONObject())
+                        .put("category", "category")
+                        .put("action", "test");
+                Describe("when duplicate funnels", () -> {
+                    BeforeEach(() -> {
+                        unit.get().event(event);
+                        unit.get().event(event);
+                    });
+                    It("then has a journey with a single event", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"funnel\":\"funnel\",\"action\":\"test\",\"timestamp\":"
+                        ));
+                        assertEquals(1, unit.get().journey().length());
+                    });
                 });
-                It("then has a journey with a single event", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"funnel\":\"funnel\",\"action\":\"test\",\"timestamp\":"
-                    ));
-                    assertEquals(1, unit.get().journey().length());
+                Describe("when duplicate categories", () -> {
+                    BeforeEach(() -> {
+                        unit.get().event(event2);
+                        unit.get().event(event2);
+                    });
+                    It("then has a journey with a single event", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"test\",\"category\":\"category\",\"timestamp\":"
+                        ));
+                        assertEquals(1, unit.get().journey().length());
+                    });
+                });
+                Describe("when duplicate categories but separate actions", () -> {
+                    BeforeEach(() -> {
+                        unit.get().event(event2);
+                        final JSONObject event3 = (new JSONObject())
+                                .put("category", "category")
+                                .put("action", "different");
+                        unit.get().event(event3);
+                    });
+                    It("then has a journey with both events", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"test\",\"category\":\"category\",\"timestamp\":"
+                        ));
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"different\",\"category\":\"category\",\"timestamp\":"
+                        ));
+                        assertEquals(2, unit.get().journey().length());
+                    });
+                });
+                Describe("when different", () -> {
+                    BeforeEach(() -> {
+                        unit.get().event(event2);
+                        final JSONObject event3 = (new JSONObject())
+                                .put("outcome", "different")
+                                .put("action", "different");
+                        unit.get().event(event3);
+                    });
+                    It("then has a journey with both events", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"test\",\"category\":\"category\",\"timestamp\":"
+                        ));
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"different\",\"outcome\":\"different\",\"timestamp\":"
+                        ));
+                        assertEquals(2, unit.get().journey().length());
+                    });
                 });
             });
             Describe("when adding generic event", () -> {
@@ -218,7 +281,7 @@ public class ViewTest {
                 Describe("when default api key", () -> {
                     BeforeEach(() -> {
                         when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
-                        journeyFuture.complete(new JSONObject());
+                        journeyFuture.complete(new Json(""));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                         unit.get().commit();
                     });
@@ -243,7 +306,7 @@ public class ViewTest {
                     final String customKey = "<custom>";
                     BeforeEach(() -> {
                         when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
-                        journeyFuture.complete(new JSONObject());
+                        journeyFuture.complete(new Json(""));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                         unit.get().init(customKey, "");
                         unit.get().commit();
@@ -259,7 +322,7 @@ public class ViewTest {
                     final String customUrl = "<custom url>";
                     BeforeEach(() -> {
                         when(JourneyApi.instance(customUrl)).thenReturn(JourneyFetcher);
-                        journeyFuture.complete(new JSONObject());
+                        journeyFuture.complete(new Json(""));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                         unit.get().init("", customUrl);
                         unit.get().commit();
@@ -271,7 +334,7 @@ public class ViewTest {
                 Describe("when API fails", () -> {
                     final JSONObject error = (new JSONObject())
                             .put("Error", "Failed");
-                    AtomicReference<JSONObject> commitResult = new AtomicReference<>(null);
+                    AtomicReference<Json> commitResult = new AtomicReference<>(null);
                     BeforeEach(() -> {
                         journeyFuture.completeExceptionally(new Throwable(error.toString()));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
@@ -295,7 +358,7 @@ public class ViewTest {
                 Describe("when default", () -> {
                     BeforeEach(() -> {
                         when(DeanonApi.instance(apiUrl)).thenReturn(DeanonFetcher);
-                        deanonFuture.complete(new JSONObject());
+                        deanonFuture.complete(new Json(""));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
                         unit.get().deanonymize(person);
                     });
@@ -314,7 +377,7 @@ public class ViewTest {
                     final String customKey = "<custom>";
                     BeforeEach(() -> {
                         when(DeanonApi.instance(apiUrl)).thenReturn(DeanonFetcher);
-                        deanonFuture.complete(new JSONObject());
+                        deanonFuture.complete(new Json(""));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
                         unit.get().init(customKey, "");
                         unit.get().deanonymize(person);
@@ -330,7 +393,7 @@ public class ViewTest {
                     final String customUrl = "<custom url>";
                     BeforeEach(() -> {
                         when(DeanonApi.instance(customUrl)).thenReturn(DeanonFetcher);
-                        deanonFuture.complete(new JSONObject());
+                        deanonFuture.complete(new Json(""));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
                         unit.get().init("", customUrl);
                         unit.get().deanonymize(person);
@@ -342,7 +405,7 @@ public class ViewTest {
                 Describe("when API fails", () -> {
                     final JSONObject error = (new JSONObject())
                             .put("Error", "Failed");
-                    AtomicReference<JSONObject> commitResult = new AtomicReference<>(null);
+                    AtomicReference<Json> commitResult = new AtomicReference<>(null);
                     BeforeEach(() -> {
                         when(DeanonApi.instance(apiUrl)).thenReturn(DeanonFetcher);
                         deanonFuture.completeExceptionally(new Throwable(error.toString()));

@@ -6,12 +6,13 @@
  * Interface for API fetch.
  *
  **/
-package xenon.view.sdk.api;
+package xenon.view.sdk.api.fetch;
 
 import org.json.JSONObject;
 
 import java.util.concurrent.CompletableFuture;
 
 public interface Fetchable {
-    CompletableFuture<JSONObject> fetch(JSONObject params);
+    CompletableFuture<Json> fetch(JSONObject params);
 }
+

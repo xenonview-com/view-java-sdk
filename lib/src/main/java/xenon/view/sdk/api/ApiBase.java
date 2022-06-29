@@ -1,12 +1,24 @@
+/**
+ * Created by lwoydziak on 06/20/22.
+ *
+ * ApiBase.java
+ *
+ * Interface for lazy instantiation of an API.
+ *
+ **/
 package xenon.view.sdk.api;
 
 import org.json.JSONObject;
+import xenon.view.sdk.api.fetch.Fetchable;
+import xenon.view.sdk.api.fetch.Fetcher;
+import xenon.view.sdk.api.fetch.Json;
+import xenon.view.sdk.api.fetch.JsonFetcher;
 
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ApiBase implements Fetchable{
+public class ApiBase implements Fetchable {
     private final String name;
     private final String method;
     private final Map<?,?> headers;
@@ -16,7 +28,7 @@ public class ApiBase implements Fetchable{
     private final boolean authenticated;
     private Fetchable jsonFetcher;
 
-    ApiBase(Map<String, Object> props){
+    public ApiBase(Map<String, Object> props){
         name = props.get("name") != null ? props.get("name").toString():"ApiBase";
         method = props.get("method") != null ? props.get("method").toString():"POST";
 
@@ -30,11 +42,16 @@ public class ApiBase implements Fetchable{
         apiUrl = props.get("apiUrl") != null ? props.get("apiUrl").toString():"https://app.xenonview.com";
         skipName = props.get("skipName") != null && (boolean) props.get("skipName");
         authenticated = props.get("authenticated") != null && (boolean) props.get("authenticated");
+        jsonFetcher = realFetcher(JsonFetcher::new);
     }
 
-    ApiBase(Map<String, Object> props, Fetchable _jsonFetcher ){
+    public ApiBase(Map<String, Object> props, Fetchable _jsonFetcher ){
         this(props);
-        jsonFetcher = _jsonFetcher;
+        if (_jsonFetcher != null) jsonFetcher = _jsonFetcher;
+    }
+
+    private Fetchable realFetcher(Fetcher api){
+        return api.instance();
     }
 
     public JSONObject params(JSONObject data) throws Throwable {
@@ -46,12 +63,16 @@ public class ApiBase implements Fetchable{
     }
 
 
-    public CompletableFuture<JSONObject> fetch(JSONObject data) {
+    public CompletableFuture<Json> fetch(JSONObject data) {
         final String fetchUrl = apiUrl +"/" + path(data);
         JSONObject fetchParameters = new JSONObject() {{
             put("url", fetchUrl);
             put("method", method);
         }};
+
+        if (data.has("ignore-certificate-errors")){
+            fetchParameters.put("ignore-certificate-errors", data.getBoolean("ignore-certificate-errors"));
+        }
 
         if (!data.isEmpty() || !skipName) {
             JSONObject bodyObject = new JSONObject();
@@ -60,7 +81,7 @@ public class ApiBase implements Fetchable{
             try {
                 parameters = params(data);
             } catch (Throwable err) {
-                CompletableFuture<JSONObject> rejected = new CompletableFuture<>();
+                CompletableFuture<Json> rejected = new CompletableFuture<>();
                 rejected.completeExceptionally(err);
                 return rejected;
             }
@@ -75,7 +96,7 @@ public class ApiBase implements Fetchable{
 
         if (authenticated) {
             Throwable exception = new Throwable("No token and authenticated!");
-            CompletableFuture<JSONObject> rejected = new CompletableFuture<>();
+            CompletableFuture<Json> rejected = new CompletableFuture<>();
             rejected.completeExceptionally(exception);
             if (!data.has("token")) return rejected;
             final String token = data.getString("token");

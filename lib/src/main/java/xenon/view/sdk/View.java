@@ -11,7 +11,10 @@ package xenon.view.sdk;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import xenon.view.sdk.api.Api;
-import xenon.view.sdk.api.Fetchable;
+import xenon.view.sdk.api.DeanonymizeApi;
+import xenon.view.sdk.api.fetch.Fetchable;
+import xenon.view.sdk.api.JourneyApi;
+import xenon.view.sdk.api.fetch.Json;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -24,25 +27,52 @@ public class View {
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> deanonApi;
     private JSONArray restoreJourney;
+    private boolean allowSelfSigned = false;
 
-    View(String _apiKey){
+    public View(String _apiKey){
         apiKey = _apiKey;
         apiUrl = "https://app.xenonview.com";
+        journeyApi = realApi(JourneyApi::new);
+        deanonApi = realApi(DeanonymizeApi::new);
     }
 
-    View(String _apiKey, String _apiUrl){
+    public View(String _apiKey, boolean _allowSelfSigned){
+        this(_apiKey);
+        allowSelfSigned = _allowSelfSigned;
+    }
+
+    public View(String _apiKey, String _apiUrl){
         this(_apiKey);
         apiUrl = _apiUrl;
     }
 
-    View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi){
+    public View(String _apiKey, String _apiUrl, boolean _allowSelfSigned){
+        this(_apiKey, _apiUrl);
+        allowSelfSigned = _allowSelfSigned;
+    }
+
+    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi){
         this(_apiKey, _apiUrl);
         journeyApi = _journeyApi;
     }
 
-    View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi){
+    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, boolean _allowSelfSigned){
+        this(_apiKey, _apiUrl, _allowSelfSigned);
+        journeyApi = _journeyApi;
+    }
+
+    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi, boolean _allowSelfSigned){
+        this(_apiKey, _apiUrl, _journeyApi, _allowSelfSigned);
+        deanonApi = _deanonApi;
+    }
+
+    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi){
         this(_apiKey, _apiUrl, _journeyApi);
         deanonApi = _deanonApi;
+    }
+
+    private Api<Fetchable> realApi(Api<Fetchable> api){
+        return api;
     }
 
     public String id() {
@@ -149,27 +179,33 @@ public class View {
         this.restoreJourney = new JSONArray();
     }
 
-    public CompletableFuture<JSONObject> commit() {
+    public CompletableFuture<Json> commit() {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("journey", journey())
                 .put("token", apiKey)
-                .put("timestamp", timestamp());
+                .put("timestamp", timestamp())
+                .put("ignore-certificate-errors", allowSelfSigned);
         reset();
         return journeyApi.instance(apiUrl).fetch(params)
                 .exceptionally(err -> {
                     restore();
-                    return new JSONObject(err.getMessage());
+                    return new Json(err.getMessage());
                 });
     }
 
-    public CompletableFuture<JSONObject> deanonymize(JSONObject person) {
+    public CompletableFuture<Json> deanonymize(JSONObject person) {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("person", person)
                 .put("token", apiKey)
-                .put("timestamp", timestamp());
+                .put("timestamp", timestamp())
+                .put("ignore-certificate-errors", allowSelfSigned);
 
-        return deanonApi.instance(apiUrl).fetch(params).exceptionally(err -> new JSONObject(err.getMessage()));
+        return deanonApi.instance(apiUrl).fetch(params).exceptionally(err -> new Json(err.getMessage()));
+    }
+
+    public boolean selfSignedAllowed(){
+        return allowSelfSigned;
     }
 }
