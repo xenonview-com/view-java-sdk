@@ -18,22 +18,27 @@ import xenon.view.sdk.api.fetch.Json;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class View {
     static private String _id = UUID.randomUUID().toString();
     static private JSONArray _journey = new JSONArray();
-    private String apiUrl;
-    private String apiKey;
+    static private String apiUrl = "";
+    static private String apiKey = "";
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> deanonApi;
     private JSONArray restoreJourney;
-    private boolean allowSelfSigned = false;
+    static private boolean allowSelfSigned = false;
 
-    public View(String _apiKey){
-        apiKey = _apiKey;
-        apiUrl = "https://app.xenonview.com";
+    public View(){
         journeyApi = realApi(JourneyApi::new);
         deanonApi = realApi(DeanonymizeApi::new);
+    }
+
+    public View(String _apiKey){
+        this();
+        View.apiKey = _apiKey;
+        View.apiUrl = "https://app.xenonview.com";
     }
 
     public View(String _apiKey, boolean _allowSelfSigned){
@@ -93,6 +98,10 @@ public class View {
     public void init(String apiKey, String apiUrl){
         if(apiUrl.length() > 0 ) this.apiUrl = apiUrl;
         if(apiKey.length() > 0 )this.apiKey = apiKey;
+    }
+
+    public void init(String apiKey){
+        init(apiKey, "");
     }
 
     public void pageView(String page) {
@@ -190,7 +199,7 @@ public class View {
         return journeyApi.instance(apiUrl).fetch(params)
                 .exceptionally(err -> {
                     restore();
-                    return new Json(err.getMessage());
+                    throw(new CompletionException(err));
                 });
     }
 
@@ -202,7 +211,7 @@ public class View {
                 .put("timestamp", timestamp())
                 .put("ignore-certificate-errors", allowSelfSigned);
 
-        return deanonApi.instance(apiUrl).fetch(params).exceptionally(err -> new Json(err.getMessage()));
+        return deanonApi.instance(apiUrl).fetch(params);
     }
 
     public boolean selfSignedAllowed(){

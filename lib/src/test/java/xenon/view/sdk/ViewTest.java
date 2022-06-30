@@ -18,6 +18,7 @@ import xenon.view.sdk.api.fetch.Json;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
@@ -57,6 +58,23 @@ public class ViewTest {
             });
             JustBeforeEach(() -> {
                 journeyStr.set(unit.get().journey().toString());
+            });
+            It("then Tests", () -> {
+              CompletableFuture<String> cf = new CompletableFuture<>();
+              cf.completeExceptionally(new Throwable("Failed"));
+              CompletableFuture<String> cf1 = cf.exceptionally((err)->{
+                  System.out.println(err.getMessage());
+                  throw(new CompletionException(err));
+              });
+              CompletableFuture<String> cf2 = cf1.exceptionally((err)->{
+                  System.out.println("2nd "+ err.getMessage());
+                  return err.getMessage();
+              });
+              assertEquals("java.lang.Throwable: Failed", cf2.get());
+            });
+            It("can be default constructed", () -> {
+                View view = new View();
+                assertEquals(unit.get().id(), view.id());
             });
             It("then has default id", () -> {
                 assertNotEquals("", unit.get().id());
@@ -308,7 +326,7 @@ public class ViewTest {
                         when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
                         journeyFuture.complete(new Json(""));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
-                        unit.get().init(customKey, "");
+                        unit.get().init(customKey);
                         unit.get().commit();
                     });
                     It("then calls the view journey API", () -> {
@@ -334,15 +352,19 @@ public class ViewTest {
                 Describe("when API fails", () -> {
                     final JSONObject error = (new JSONObject())
                             .put("Error", "Failed");
-                    AtomicReference<Json> commitResult = new AtomicReference<>(null);
+                    AtomicReference<String> commitResult = new AtomicReference<>(null);
                     BeforeEach(() -> {
                         journeyFuture.completeExceptionally(new Throwable(error.toString()));
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                         when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
-                        commitResult.set(unit.get().commit().get());
+                        CompletableFuture<Json> result = unit.get().commit();
+                        result.exceptionally((err)->{
+                            commitResult.set(err.getMessage());
+                            return null;
+                        });
                     });
                     It("then has correct error text", () -> {
-                        assertEquals(error.toString(), commitResult.get().toString());
+                        assertEquals("java.lang.Throwable: " + error.toString(), commitResult.get());
                     });
                     It("then restores journey", () -> {
                         assertThat(journeyStr.get(), containsString(
@@ -379,7 +401,7 @@ public class ViewTest {
                         when(DeanonApi.instance(apiUrl)).thenReturn(DeanonFetcher);
                         deanonFuture.complete(new Json(""));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
-                        unit.get().init(customKey, "");
+                        unit.get().init(customKey);
                         unit.get().deanonymize(person);
                     });
                     It("then calls the view deanon API", () -> {
@@ -405,12 +427,16 @@ public class ViewTest {
                 Describe("when API fails", () -> {
                     final JSONObject error = (new JSONObject())
                             .put("Error", "Failed");
-                    AtomicReference<Json> commitResult = new AtomicReference<>(null);
+                    AtomicReference<String> commitResult = new AtomicReference<>(null);
                     BeforeEach(() -> {
                         when(DeanonApi.instance(apiUrl)).thenReturn(DeanonFetcher);
                         deanonFuture.completeExceptionally(new Throwable(error.toString()));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
-                        commitResult.set(unit.get().deanonymize(person).get());
+                        CompletableFuture<Json> result = unit.get().deanonymize(person);
+                        result.exceptionally((err)->{
+                            commitResult.set(err.getMessage());
+                            return null;
+                        });
                     });
                     It("then has correct error text", () -> {
                         assertEquals(error.toString(), commitResult.get().toString());
