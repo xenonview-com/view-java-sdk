@@ -1,7 +1,7 @@
 /**
  * Created by lwoydziak on 06/20/22.
  *
- * View.java
+ * Xenon.java
  *
  * SDK for interacting with the Xenon View service.
  *
@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class View {
+public class Xenon {
     static private String _id = UUID.randomUUID().toString();
     static private JSONArray _journey = new JSONArray();
     static private String apiUrl = "";
@@ -30,48 +30,48 @@ public class View {
     private JSONArray restoreJourney;
     static private boolean allowSelfSigned = false;
 
-    public View(){
+    public Xenon(){
         journeyApi = realApi(JourneyApi::new);
         deanonApi = realApi(DeanonymizeApi::new);
     }
 
-    public View(String _apiKey){
+    public Xenon(String _apiKey){
         this();
-        View.apiKey = _apiKey;
-        View.apiUrl = "https://app.xenonview.com";
+        Xenon.apiKey = _apiKey;
+        Xenon.apiUrl = "https://app.xenonview.com";
     }
 
-    public View(String _apiKey, boolean _allowSelfSigned){
+    public Xenon(String _apiKey, boolean _allowSelfSigned){
         this(_apiKey);
         allowSelfSigned = _allowSelfSigned;
     }
 
-    public View(String _apiKey, String _apiUrl){
+    public Xenon(String _apiKey, String _apiUrl){
         this(_apiKey);
         apiUrl = _apiUrl;
     }
 
-    public View(String _apiKey, String _apiUrl, boolean _allowSelfSigned){
+    public Xenon(String _apiKey, String _apiUrl, boolean _allowSelfSigned){
         this(_apiKey, _apiUrl);
         allowSelfSigned = _allowSelfSigned;
     }
 
-    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi){
+    public Xenon(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi){
         this(_apiKey, _apiUrl);
         journeyApi = _journeyApi;
     }
 
-    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, boolean _allowSelfSigned){
+    public Xenon(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, boolean _allowSelfSigned){
         this(_apiKey, _apiUrl, _allowSelfSigned);
         journeyApi = _journeyApi;
     }
 
-    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi, boolean _allowSelfSigned){
+    public Xenon(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi, boolean _allowSelfSigned){
         this(_apiKey, _apiUrl, _journeyApi, _allowSelfSigned);
         deanonApi = _deanonApi;
     }
 
-    public View(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi){
+    public Xenon(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi, Api<Fetchable> _deanonApi){
         this(_apiKey, _apiUrl, _journeyApi);
         deanonApi = _deanonApi;
     }
@@ -81,23 +81,23 @@ public class View {
     }
 
     public String id() {
-        return View._id;
+        return Xenon._id;
 
     }
 
     public String id(String _id) {
-        View._id = _id;
-        return View._id;
+        Xenon._id = _id;
+        return Xenon._id;
     }
 
 
     public JSONArray journey() {
-        return View._journey;
+        return Xenon._journey;
     }
 
     public void init(String apiKey, String apiUrl){
-        if(apiUrl.length() > 0 ) this.apiUrl = apiUrl;
-        if(apiKey.length() > 0 )this.apiKey = apiKey;
+        if(apiUrl.length() > 0 ) Xenon.apiUrl = apiUrl;
+        if(apiKey.length() > 0 ) Xenon.apiKey = apiKey;
     }
 
     public void init(String apiKey){
@@ -163,12 +163,12 @@ public class View {
     }
 
     private void storeJourney(JSONArray journey) {
-        View._journey = journey;
+        Xenon._journey = journey;
     }
 
     public void reset() {
         this.restoreJourney = this.journey();
-        View._journey = new JSONArray();
+        Xenon._journey = new JSONArray();
     }
 
     public void restore() {

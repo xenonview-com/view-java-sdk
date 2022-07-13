@@ -36,7 +36,7 @@ class ApiType implements Api<Fetchable> {
 
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads = 1)
-public class ViewTest {
+public class XenonTest {
     {
         Describe("View SDK", () -> {
             final String apiKey = "<token>";
@@ -47,10 +47,10 @@ public class ViewTest {
             final Fetchable DeanonFetcher = mock(Fetchable.class);
             final Api<Fetchable> DeanonApi = mock(ApiType.class);
             final CompletableFuture<Json> deanonFuture = new CompletableFuture<>();
-            AtomicReference<View> unit = new AtomicReference<>(null);
+            AtomicReference<Xenon> unit = new AtomicReference<>(null);
             AtomicReference<String> journeyStr = new AtomicReference<>("");
             BeforeEach(() -> {
-                unit.set(new View(apiKey, apiUrl, JourneyApi, DeanonApi));
+                unit.set(new Xenon(apiKey, apiUrl, JourneyApi, DeanonApi));
                 unit.get().reset();
             });
             AfterEach(() -> {
@@ -59,31 +59,18 @@ public class ViewTest {
             JustBeforeEach(() -> {
                 journeyStr.set(unit.get().journey().toString());
             });
-            It("then Tests", () -> {
-              CompletableFuture<String> cf = new CompletableFuture<>();
-              cf.completeExceptionally(new Throwable("Failed"));
-              CompletableFuture<String> cf1 = cf.exceptionally((err)->{
-                  System.out.println(err.getMessage());
-                  throw(new CompletionException(err));
-              });
-              CompletableFuture<String> cf2 = cf1.exceptionally((err)->{
-                  System.out.println("2nd "+ err.getMessage());
-                  return err.getMessage();
-              });
-              assertEquals("java.lang.Throwable: Failed", cf2.get());
-            });
             It("can be default constructed", () -> {
-                View view = new View();
-                assertEquals(unit.get().id(), view.id());
+                Xenon xenon = new Xenon();
+                assertEquals(unit.get().id(), xenon.id());
             });
             It("then has default id", () -> {
                 assertNotEquals("", unit.get().id());
             });
             It("can be constructed using self signed cert", () -> {
-              View v1 = new View(apiKey, true);
-              View v2 = new View(apiKey, apiUrl, true);
-              View v3 = new View(apiKey, apiUrl, JourneyApi, true);
-              View v4 = new View(apiKey, apiUrl, JourneyApi, DeanonApi, true);
+              Xenon v1 = new Xenon(apiKey, true);
+              Xenon v2 = new Xenon(apiKey, apiUrl, true);
+              Xenon v3 = new Xenon(apiKey, apiUrl, JourneyApi, true);
+              Xenon v4 = new Xenon(apiKey, apiUrl, JourneyApi, DeanonApi, true);
               assertTrue(v1.selfSignedAllowed());
               assertTrue(v2.selfSignedAllowed());
               assertTrue(v3.selfSignedAllowed());
@@ -98,7 +85,7 @@ public class ViewTest {
                     assertEquals(testId, unit.get().id());
                 });
                 It("then persists id", () -> {
-                    assertEquals(testId, (new View(apiKey, apiUrl)).id());
+                    assertEquals(testId, (new Xenon(apiKey, apiUrl)).id());
                 });
                 AfterEach(() -> {
                     unit.get().id(UUID.randomUUID().toString());
@@ -107,7 +94,7 @@ public class ViewTest {
             Describe("when initialized and previous journey", () -> {
                 BeforeEach(() -> {
                     unit.get().pageView("test");
-                    unit.set(new View(apiKey, apiUrl));
+                    unit.set(new Xenon(apiKey, apiUrl));
                 });
                 It("then has previous journey", () -> {
                     assertThat(journeyStr.get(), containsString(
