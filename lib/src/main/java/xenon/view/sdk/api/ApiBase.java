@@ -74,7 +74,7 @@ public class ApiBase implements Fetchable {
             fetchParameters.put("ignore-certificate-errors", data.getBoolean("ignore-certificate-errors"));
         }
 
-        if (!data.isEmpty() || !skipName) {
+        if (data.length() != 0 || !skipName) {
             JSONObject bodyObject = new JSONObject();
             if (!skipName) bodyObject.put("name", name);
             JSONObject parameters;

@@ -10,6 +10,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 ## <a name="whats-new"></a>
 ## What's New
+* v0.0.3 - Fix: isEmpty() doesn't work in Android
 * v0.0.2 - Rename View -> Xenon
 * v0.0.1 - Initial release (Event adding follows standard)
 
@@ -17,25 +18,25 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.2/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.3/jar):
 
 Via maven:
 ```xml
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-xenon-sdk</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
 </dependency>
 ```
 
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.2'
+implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.3'
 ```
 
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.2")
+implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.3")
 ```
 ## <a name="how-to-use"></a>
 ## How to use
@@ -75,10 +76,9 @@ You can use this method to add an outcome to the journey.
 import xenon.view.sdk.Xenon;
 
 // you can add an outcome to journey
-final Xenon xenon = new Xenon();
 String outcome = "<outcome>";
 String action = "<custom action>";
-xenon.outcome(outcome,action);
+new Xenon().outcome(outcome,action);
 ```
 This adds an outcome to the journey chain effectively completing it.
 
@@ -89,10 +89,9 @@ You can use this method to add page views to the journey.
 ```java
 import xenon.view.sdk.Xenon;
 
-// you can add a page xenon to a journey
-final Xenon xenon = new Xenon()
+// you can add a page view to a journey
 String page = "test/page";
-xenon.pageView(page);
+new Xenon().pageView(page);
 ```
 This adds a page view step to the journey chain.
 
@@ -104,10 +103,9 @@ You can use this method to track funnel stages in the journey.
 import xenon.view.sdk.Xenon;
 
 // you can add a funnel stage to a journey
-final Xenon xenon = new Xenon();
 String action = "<custom action>";
 String stage = "<stage in funnel>";
-xenon.funnel(stage, action);
+new Xenon().funnel(stage, action);
 ```
 This adds a funnel stage to the journey chain.
 
@@ -119,12 +117,11 @@ import xenon.view.sdk.Xenon;
 import org.json.JSONObject;
 
 // you can add a generic event to journey
-final Xenon xenon = new Xenon();    
 JSONObject event = new JSONObject(){{
    put("category", "Event");
    put("action", "test");
 }};
-xenon.event(event);
+new Xenon().event(event);
 ```
 This adds an event step to the journey chain.
 
@@ -136,8 +133,7 @@ Journeys only exist locally until you commit them to the Xenon View system. Afte
 import xenon.view.sdk.Xenon;
 
 // you can commit a journey to Xenon View
-final Xenon xenon = new Xenon();
-xenon.commit();
+new Xenon().commit();
 ```
 This commits a journey to Xenon View for analysis.
 
@@ -154,7 +150,7 @@ JSONObject person = new JSONObject(){{
     put("name","Java Test");
     put("email","javatest@example.com");
 }};
-xenon.deanonymize(person);
+new Xenon().deanonymize(person);
 ```
 This deanonymizes every journey committed to a particular user.
 
@@ -178,7 +174,7 @@ assertNotEqual("",xenon.id())
 // you can also set the id
 final String testId="<some random uuid>";
 xenon.id(testId);
-assertEquals(testId,xenon.id());
+assertEquals(testId, xenon.id());
 ```
 
 ### Error handling
@@ -191,8 +187,7 @@ import xenon.view.sdk.Xenon;
 import xenon.xenon.sdk.api.fetch.Json;
 
 // you can handle errors if necessary
-final Xenon xenon = new Xenon();
-xenon.commit().exceptionally((err)->{
+new Xenon().commit().exceptionally((err)->{
     // handle error
     return Json("{}"); 
 });
