@@ -9,6 +9,7 @@ package xenon.view.sdk.api.fetch;
 
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.*;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,7 +37,7 @@ public class JsonFetcher implements Fetchable {
         builder = _builder;
     }
 
-    public CompletableFuture<Json> fetch(JSONObject data) {
+    public CompletableFuture<Json> fetch(JSONObject data) throws JSONException{
         CompletableFuture<Json> completableFuture = new CompletableFuture<>();
         Map<String, String> defaultHeaders = new Hashtable<String, String>(){{
             put("accept", "application/json");
@@ -56,7 +58,7 @@ public class JsonFetcher implements Fetchable {
 
 
         addHeaders(builder, defaultHeaders);
-        if (data.has("requestHeaders")) addHeaders(builder, (JSONObject) data.get("requestHeaders"));
+        if (data.has("requestHeaders")) addHeaders(builder, (JSONObject) data.getJSONObject("requestHeaders"));
 
         if (data.has("method")){
             switch (data.getString("method")){
@@ -150,8 +152,9 @@ public class JsonFetcher implements Fetchable {
         }
     }
 
-    private void addHeaders(Request.Builder builder, JSONObject headers) {
-        for(String key : headers.keySet()){
+    private void addHeaders(Request.Builder builder, JSONObject headers) throws JSONException {
+        for(Iterator<String> iterator = headers.keys(); iterator.hasNext();){
+            String key = iterator.next();
             builder.addHeader(key, headers.getString(key));
         }
     }

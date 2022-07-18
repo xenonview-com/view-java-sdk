@@ -10,8 +10,11 @@ package xenon.view.sdk.api;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
+
 import xenon.view.sdk.api.fetch.Fetchable;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,17 +52,21 @@ public class DeanonymizeApiTest {
                 unit.get().fetch(data.get());
             });
             It("can be default constructed", () -> {
-              assertNotNull(new DeanonymizeApi(apiUrl));
+                assertNotNull(new DeanonymizeApi(apiUrl));
             });
             It("then requests deanonymize", () -> {
                 verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                    assertEquals("POST", params.get("method").toString());
-                    assertEquals(apiUrl + "/deanonymize", params.get("url").toString());
-                    JSONObject body = params.getJSONObject("body");
-                    assertEquals("ApiDeanonymize", body.get("name"));
-                    JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                    assertEquals("application/json", requestHeaders.get("content-type"));
-                    assertEquals("Bearer <testToken>", requestHeaders.get("authorization"));
+                    try {
+                        assertEquals("POST", params.get("method").toString());
+                        assertEquals(apiUrl + "/deanonymize", params.get("url").toString());
+                        JSONObject body = params.getJSONObject("body");
+                        assertEquals("ApiDeanonymize", body.get("name"));
+                        JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                        assertEquals("application/json", requestHeaders.get("content-type"));
+                        assertEquals("Bearer <testToken>", requestHeaders.get("authorization"));
+                    } catch (JSONException err) {
+                        return false;
+                    }
                     return true;
                 }));
             });

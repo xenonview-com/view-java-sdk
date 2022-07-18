@@ -9,6 +9,7 @@
 package xenon.view.sdk;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import xenon.view.sdk.api.Api;
 import xenon.view.sdk.api.DeanonymizeApi;
@@ -104,28 +105,28 @@ public class Xenon {
         init(apiKey, "");
     }
 
-    public void pageView(String page) {
+    public void pageView(String page) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("category", "Page View");
         content.put("action", page);
         journeyAdd(content);
     }
 
-    public void funnel(String stage, String action) {
+    public void funnel(String stage, String action) throws JSONException{
         JSONObject content = new JSONObject();
         content.put("funnel", stage);
         content.put("action", action);
         journeyAdd(content);
     }
 
-    public void outcome(String outcome, String action) {
+    public void outcome(String outcome, String action) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("outcome", outcome);
         content.put("action", action);
         journeyAdd(content);
     }
 
-    public void event(JSONObject event) {
+    public void event(JSONObject event) throws JSONException {
         if (!event.has("action")) {
             event.put("action", (new JSONObject(event.toString())));
         }
@@ -137,7 +138,7 @@ public class Xenon {
         journeyAdd(event);
     }
 
-    private void journeyAdd(JSONObject content) {
+    private void journeyAdd(JSONObject content) throws JSONException {
         JSONArray journey = journey();
         content.put("timestamp", timestamp());
 
@@ -171,7 +172,7 @@ public class Xenon {
         Xenon._journey = new JSONArray();
     }
 
-    public void restore() {
+    public void restore() throws JSONException {
         JSONArray currentJourney = this.journey();
         JSONArray restoreJourney = this.restoreJourney;
         if (currentJourney.length() >0 ) {
@@ -188,7 +189,7 @@ public class Xenon {
         this.restoreJourney = new JSONArray();
     }
 
-    public CompletableFuture<Json> commit() {
+    public CompletableFuture<Json> commit() throws JSONException {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("journey", journey())
@@ -198,12 +199,16 @@ public class Xenon {
         reset();
         return journeyApi.instance(apiUrl).fetch(params)
                 .exceptionally(err -> {
-                    restore();
+                    try {
+                        restore();
+                    } catch (JSONException doNotCare) {
+                        // swallow
+                    }
                     throw(new CompletionException(err));
                 });
     }
 
-    public CompletableFuture<Json> deanonymize(JSONObject person) {
+    public CompletableFuture<Json> deanonymize(JSONObject person) throws JSONException {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("person", person)

@@ -9,13 +9,17 @@ package xenon.view.sdk.api.fetch;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+
 import okhttp3.*;
 import okio.Buffer;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
 
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.Principal;
@@ -38,22 +42,22 @@ public class JsonFetcherTest {
             AtomicReference<JsonFetcher> unit = new AtomicReference<>(null);
             final OkHttpClient client = mock(OkHttpClient.class);
             final Call enqueuer = mock(Call.class);
-            final JSONObject data = new JSONObject();
+            AtomicReference<JSONObject> data = new AtomicReference<>(new JSONObject());
             BeforeEach(() -> {
-                data.put("url", "https://example.blah/");
+                data.get().put("url", "https://example.blah/");
             });
             AfterEach(() -> {
-                data.clear();
+                data.set(new JSONObject());
             });
             It("can be constructed", () -> {
-              assertNotNull(new JsonFetcher());
+                assertNotNull(new JsonFetcher());
             });
             Describe("when default fetch", () -> {
                 AtomicReference<Callback> callback = new AtomicReference<>();
                 AtomicReference<Request> request = new AtomicReference<>();
                 AtomicReference<CompletableFuture<Json>> completableFuture = new AtomicReference<>();
                 BeforeEach(() -> {
-                    data.put("method", "GET");
+                    data.get().put("method", "GET");
                     unit.set(new JsonFetcher(client));
                     when(client.newCall(any())).thenAnswer(invocation -> {
                         request.set((Request) invocation.getArguments()[0]);
@@ -63,13 +67,17 @@ public class JsonFetcherTest {
                         callback.set((Callback) invocation.getArguments()[0]);
                         return null;
                     }).when(enqueuer).enqueue(notNull());
-                    completableFuture.set(unit.get().fetch(data));
+                    completableFuture.set(unit.get().fetch(data.get()));
                 });
                 It("requests base url", () -> {
                     verify(client).newCall(argThat((Request _request) -> {
-                        Headers headers = _request.headers();
-                        assertEquals("application/json", headers.get("accept"));
-                        assertEquals(data.getString("url"), _request.url().toString());
+                        try {
+                            Headers headers = _request.headers();
+                            assertEquals("application/json", headers.get("accept"));
+                            assertEquals(data.get().getString("url"), _request.url().toString());
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -183,17 +191,17 @@ public class JsonFetcherTest {
                         });
                     });
                     Describe("when no HTTP message", () -> {
-                      BeforeEach(() -> {
-                          when(response.message()).thenAnswer((invocation) -> {
-                              throw new Throwable("test");
-                          });
-                      });
-                      It("then completes exceptionally", () -> {
-                        completableFuture.get().exceptionally((Throwable err)->{
-                            assertEquals("test", err.getMessage());
-                            return new Json("");
+                        BeforeEach(() -> {
+                            when(response.message()).thenAnswer((invocation) -> {
+                                throw new Throwable("test");
+                            });
                         });
-                      });
+                        It("then completes exceptionally", () -> {
+                            completableFuture.get().exceptionally((Throwable err) -> {
+                                assertEquals("test", err.getMessage());
+                                return new Json("");
+                            });
+                        });
                     });
                 });
                 Describe("when the request has no data", () -> {
@@ -221,8 +229,8 @@ public class JsonFetcherTest {
                 AtomicReference<Request> request = new AtomicReference<>();
                 AtomicReference<CompletableFuture<Json>> completableFuture = new AtomicReference<>();
                 BeforeEach(() -> {
-                    data.put("method", "POST");
-                    data.put("body", new JSONObject() {{
+                    data.get().put("method", "POST");
+                    data.get().put("body", new JSONObject() {{
                         put("test", "body");
                     }});
                     unit.set(new JsonFetcher(client));
@@ -234,7 +242,7 @@ public class JsonFetcherTest {
                         callback.set((Callback) invocation.getArguments()[0]);
                         return null;
                     }).when(enqueuer).enqueue(notNull());
-                    completableFuture.set(unit.get().fetch(data));
+                    completableFuture.set(unit.get().fetch(data.get()));
                 });
                 It("requests base url using a post method", () -> {
                     verify(client).newCall(argThat((Request _request) -> {
@@ -258,9 +266,9 @@ public class JsonFetcherTest {
                 AtomicReference<Request> request = new AtomicReference<>();
                 AtomicReference<CompletableFuture<Json>> completableFuture = new AtomicReference<>();
                 BeforeEach(() -> {
-                    Map<String, String> headers = new Hashtable<>();
+                    JSONObject headers = new JSONObject();
                     headers.put("authorization", "Bearer <token>");
-                    data.put("requestHeaders", headers);
+                    data.get().put("requestHeaders", headers);
                     unit.set(new JsonFetcher(client));
                     when(client.newCall(any())).thenAnswer(invocation -> {
                         request.set((Request) invocation.getArguments()[0]);
@@ -270,14 +278,18 @@ public class JsonFetcherTest {
                         callback.set((Callback) invocation.getArguments()[0]);
                         return null;
                     }).when(enqueuer).enqueue(notNull());
-                    completableFuture.set(unit.get().fetch(data));
+                    completableFuture.set(unit.get().fetch(data.get()));
                 });
                 It("requests base url with authorization header", () -> {
                     verify(client).newCall(argThat((Request _request) -> {
-                        Headers headers = _request.headers();
-                        assertEquals("application/json", headers.get("accept"));
-                        assertEquals(data.getString("url"), _request.url().toString());
-                        assertEquals("Bearer <token>", headers.get("authorization"));
+                        try {
+                            Headers headers = _request.headers();
+                            assertEquals("application/json", headers.get("accept"));
+                            assertEquals(data.get().getString("url"), _request.url().toString());
+                            assertEquals("Bearer <token>", headers.get("authorization"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -288,10 +300,10 @@ public class JsonFetcherTest {
                 AtomicReference<CompletableFuture<Json>> completableFuture = new AtomicReference<>();
                 final OkHttpClient.Builder builder = mock(OkHttpClient.Builder.class);
                 BeforeEach(() -> {
-                    Map<String, String> headers = new Hashtable<>();
+                    JSONObject headers = new JSONObject();
                     headers.put("authorization", "Bearer <token>");
-                    data.put("requestHeaders", headers);
-                    data.put("ignore-certificate-errors", true);
+                    data.get().put("requestHeaders", headers);
+                    data.get().put("ignore-certificate-errors", true);
                     unit.set(new JsonFetcher(builder, client));
                     when(builder.sslSocketFactory(any(), any())).thenReturn(builder);
                     when(builder.hostnameVerifier(any())).thenReturn(builder);
@@ -307,7 +319,7 @@ public class JsonFetcherTest {
                 });
                 Describe("when getting with no errors", () -> {
                     BeforeEach(() -> {
-                        completableFuture.set(unit.get().fetch(data));
+                        completableFuture.set(unit.get().fetch(data.get()));
                     });
                     It("then creates/attaches a socket factory", () -> {
                         verify(builder).sslSocketFactory(
@@ -460,7 +472,7 @@ public class JsonFetcherTest {
                         when(builder.build()).thenAnswer(invocation -> {
                             throw new KeyManagementException("self signed ignored error");
                         });
-                        completableFuture.set(unit.get().fetch(data));
+                        completableFuture.set(unit.get().fetch(data.get()));
                     });
                     It("then issues and doesn't ignore errors", () -> {
                         verify(enqueuer).enqueue(notNull());

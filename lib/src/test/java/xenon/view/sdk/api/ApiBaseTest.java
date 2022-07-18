@@ -1,17 +1,20 @@
-/**
- * Created by lwoydziak on 06/20/22.
- * <p>
- * ApiBaseTest.js
- * <p>
- * Testing: Base class for API interactions with Xenon View.
+/*
+  Created by lwoydziak on 06/20/22.
+  <p>
+  ApiBaseTest.js
+  <p>
+  Testing: Base class for API interactions with Xenon View.
  */
 package xenon.view.sdk.api;
 
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
+
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Json;
 
@@ -42,13 +45,17 @@ public class ApiBaseTest {
                 });
                 It("requests base url", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        assertEquals("POST", params.get("method").toString());
-                        assertEquals(apiUrl + "/", params.get("url").toString());
-                        JSONObject body = params.getJSONObject("body");
-                        assertEquals("ApiBase", body.get("name"));
-                        assertEquals("{}", body.getJSONObject("parameters").toString());
-                        JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                        assertEquals("application/json", requestHeaders.get("content-type"));
+                        try {
+                            assertEquals("POST", params.get("method").toString());
+                            assertEquals(apiUrl + "/", params.get("url").toString());
+                            JSONObject body = params.getJSONObject("body");
+                            assertEquals("ApiBase", body.get("name"));
+                            assertEquals("{}", body.getJSONObject("parameters").toString());
+                            JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                            assertEquals("application/json", requestHeaders.get("content-type"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -59,13 +66,17 @@ public class ApiBaseTest {
                         put("apiUrl", apiUrl);
                     }};
                     unit.set(new ApiBase(props, jsonFetcher));
-                    unit.get().fetch(new JSONObject(){{
+                    unit.get().fetch(new JSONObject() {{
                         put("ignore-certificate-errors", true);
                     }});
                 });
                 It("requests base url and ignores self signed certs", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        assertTrue(params.getBoolean("ignore-certificate-errors"));
+                        try {
+                            assertTrue(params.getBoolean("ignore-certificate-errors"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -88,13 +99,17 @@ public class ApiBaseTest {
                 });
                 It("requests custom url", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        assertEquals("OPTIONS", params.get("method").toString());
-                        assertEquals(apiUrl + "/url", params.get("url").toString());
-                        JSONObject body = params.getJSONObject("body");
-                        assertEquals("name", body.get("name"));
-                        JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                        assertEquals("application/json", requestHeaders.get("content-type"));
-                        assertEquals("header", requestHeaders.get("header"));
+                        try {
+                            assertEquals("OPTIONS", params.get("method").toString());
+                            assertEquals(apiUrl + "/url", params.get("url").toString());
+                            JSONObject body = params.getJSONObject("body");
+                            assertEquals("name", body.get("name"));
+                            JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                            assertEquals("application/json", requestHeaders.get("content-type"));
+                            assertEquals("header", requestHeaders.get("header"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -114,9 +129,13 @@ public class ApiBaseTest {
 
                     It("requests url", () -> {
                         verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                            JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                            assertEquals("application/json", requestHeaders.get("content-type"));
-                            assertEquals("Bearer <anAccessToken>", requestHeaders.get("authorization"));
+                            try {
+                                JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                                assertEquals("application/json", requestHeaders.get("content-type"));
+                                assertEquals("Bearer <anAccessToken>", requestHeaders.get("authorization"));
+                            } catch (JSONException err) {
+                                return false;
+                            }
                             return true;
                         }));
                     });
@@ -175,9 +194,13 @@ public class ApiBaseTest {
 
                 It("requests url", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        assertEquals("GET", params.getString("method"));
-                        JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                        assertFalse(requestHeaders.has("content-type"));
+                        try {
+                            assertEquals("GET", params.getString("method"));
+                            JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                            assertFalse(requestHeaders.has("content-type"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -193,7 +216,11 @@ public class ApiBaseTest {
 
                 It("requests url", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        assertEquals("https://example.com/", params.getString("url"));
+                        try {
+                            assertEquals("https://example.com/", params.getString("url"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });
@@ -223,11 +250,15 @@ public class ApiBaseTest {
 
                 It("requests base url with no name and overloaded params", () -> {
                     verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                        JSONObject body = params.getJSONObject("body");
-                        assertFalse(body.has("name"));
-                        JSONObject apiParams = body.getJSONObject("parameters");
-                        assertEquals("world", apiParams.getString("hello"));
-                        assertFalse(apiParams.has("test"));
+                        try {
+                            JSONObject body = params.getJSONObject("body");
+                            assertFalse(body.has("name"));
+                            JSONObject apiParams = body.getJSONObject("parameters");
+                            assertEquals("world", apiParams.getString("hello"));
+                            assertFalse(apiParams.has("test"));
+                        } catch (JSONException err) {
+                            return false;
+                        }
                         return true;
                     }));
                 });

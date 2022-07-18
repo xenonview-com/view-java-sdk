@@ -10,9 +10,12 @@ package xenon.view.sdk.api;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
+
 import xenon.view.sdk.api.fetch.Fetchable;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,17 +52,21 @@ public class JourneyApiTest {
                 unit.get().fetch(data.get());
             });
             It("can be default constructed", () -> {
-              assertNotNull(new JourneyApi(apiUrl));
+                assertNotNull(new JourneyApi(apiUrl));
             });
             It("then requests Journey Api", () -> {
                 verify(jsonFetcher).fetch(argThat((JSONObject params) -> {
-                    assertEquals("POST", params.get("method").toString());
-                    assertEquals(apiUrl + "/journey", params.get("url").toString());
-                    JSONObject body = params.getJSONObject("body");
-                    assertEquals("ApiJourney", body.get("name"));
-                    JSONObject requestHeaders = params.getJSONObject("requestHeaders");
-                    assertEquals("application/json", requestHeaders.get("content-type"));
-                    assertEquals("Bearer <testToken>", requestHeaders.get("authorization"));
+                    try {
+                        assertEquals("POST", params.get("method").toString());
+                        assertEquals(apiUrl + "/journey", params.get("url").toString());
+                        JSONObject body = params.getJSONObject("body");
+                        assertEquals("ApiJourney", body.get("name"));
+                        JSONObject requestHeaders = params.getJSONObject("requestHeaders");
+                        assertEquals("application/json", requestHeaders.get("content-type"));
+                        assertEquals("Bearer <testToken>", requestHeaders.get("authorization"));
+                    } catch (JSONException err) {
+                        return false;
+                    }
                     return true;
                 }));
             });
@@ -69,24 +76,24 @@ public class JourneyApiTest {
                 });
                 It("then creates parameters without journey", () -> {
                     JSONObject local = unit.get().params(data.get());
-                    assertEquals(new JSONObject(){{
+                    assertEquals(new JSONObject() {{
                         put("uuid", "somevalue");
                         put("timestamp", 0.1);
                     }}.toString(), local.toString());
                 });
             });
             Describe("when parameters include Journey", () -> {
-              BeforeEach(() -> {
-                data.set(dataWithJourney);
-              });
-              It("then creates parameters with journey", () -> {
-                  JSONObject local = unit.get().params(data.get());
-                  assertEquals(new JSONObject(){{
-                      put("uuid", "somevalue");
-                      put("timestamp", 0.1);
-                      put("journey", journeyData);
-                  }}.toString(), local.toString());
-              });
+                BeforeEach(() -> {
+                    data.set(dataWithJourney);
+                });
+                It("then creates parameters with journey", () -> {
+                    JSONObject local = unit.get().params(data.get());
+                    assertEquals(new JSONObject() {{
+                        put("uuid", "somevalue");
+                        put("timestamp", 0.1);
+                        put("journey", journeyData);
+                    }}.toString(), local.toString());
+                });
             });
         });
     }

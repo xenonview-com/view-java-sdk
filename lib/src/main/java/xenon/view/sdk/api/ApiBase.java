@@ -8,6 +8,7 @@
  **/
 package xenon.view.sdk.api;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Fetcher;
@@ -63,7 +64,7 @@ public class ApiBase implements Fetchable {
     }
 
 
-    public CompletableFuture<Json> fetch(JSONObject data) {
+    public CompletableFuture<Json> fetch(JSONObject data) throws JSONException {
         final String fetchUrl = apiUrl +"/" + path(data);
         JSONObject fetchParameters = new JSONObject() {{
             put("url", fetchUrl);
@@ -89,7 +90,7 @@ public class ApiBase implements Fetchable {
             fetchParameters.put("body", bodyObject);
         }
 
-        Map<String, String> requestHeaders = new Hashtable<>();
+        JSONObject requestHeaders = new JSONObject();
         for (Map.Entry<?, ?> entry : headers.entrySet()) {
             requestHeaders.put(entry.getKey().toString(), entry.getValue().toString());
         }

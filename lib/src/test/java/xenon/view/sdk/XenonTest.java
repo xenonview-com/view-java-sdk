@@ -9,9 +9,12 @@ package xenon.view.sdk;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+
 import xenon.view.sdk.api.Api;
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Json;
@@ -67,14 +70,14 @@ public class XenonTest {
                 assertNotEquals("", unit.get().id());
             });
             It("can be constructed using self signed cert", () -> {
-              Xenon v1 = new Xenon(apiKey, true);
-              Xenon v2 = new Xenon(apiKey, apiUrl, true);
-              Xenon v3 = new Xenon(apiKey, apiUrl, JourneyApi, true);
-              Xenon v4 = new Xenon(apiKey, apiUrl, JourneyApi, DeanonApi, true);
-              assertTrue(v1.selfSignedAllowed());
-              assertTrue(v2.selfSignedAllowed());
-              assertTrue(v3.selfSignedAllowed());
-              assertTrue(v4.selfSignedAllowed());
+                Xenon v1 = new Xenon(apiKey, true);
+                Xenon v2 = new Xenon(apiKey, apiUrl, true);
+                Xenon v3 = new Xenon(apiKey, apiUrl, JourneyApi, true);
+                Xenon v4 = new Xenon(apiKey, apiUrl, JourneyApi, DeanonApi, true);
+                assertTrue(v1.selfSignedAllowed());
+                assertTrue(v2.selfSignedAllowed());
+                assertTrue(v3.selfSignedAllowed());
+                assertTrue(v4.selfSignedAllowed());
             });
             Describe("when id set", () -> {
                 final String testId = "<some random uuid>";
@@ -292,11 +295,15 @@ public class XenonTest {
                     });
                     It("then calls the view journey API", () -> {
                         verify(JourneyFetcher).fetch(argThat((JSONObject params) -> {
-                            assertThat(params.get("id").toString(), instanceOf(String.class));
-                            assertThat(params.get("journey").toString(),
-                                    containsString("[{\"action\":\"test\",\"category\":\"Event\",\"timestamp\":"));
-                            assertEquals(apiKey, params.get("token"));
-                            assertThat(params.get("timestamp"), instanceOf(Double.class));
+                            try {
+                                assertThat(params.get("id").toString(), instanceOf(String.class));
+                                assertThat(params.get("journey").toString(),
+                                        containsString("[{\"action\":\"test\",\"category\":\"Event\",\"timestamp\":"));
+                                assertEquals(apiKey, params.get("token"));
+                                assertThat(params.get("timestamp"), instanceOf(Double.class));
+                            } catch (JSONException err) {
+                                return false;
+                            }
                             return true;
                         }));
                     });
@@ -318,7 +325,11 @@ public class XenonTest {
                     });
                     It("then calls the view journey API", () -> {
                         verify(JourneyFetcher).fetch(argThat((JSONObject params) -> {
-                            assertEquals(customKey, params.get("token"));
+                            try {
+                                assertEquals(customKey, params.get("token"));
+                            } catch (JSONException err) {
+                                return false;
+                            }
                             return true;
                         }));
                     });
@@ -345,7 +356,7 @@ public class XenonTest {
                         when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                         when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
                         CompletableFuture<Json> result = unit.get().commit();
-                        result.exceptionally((err)->{
+                        result.exceptionally((err) -> {
                             commitResult.set(err.getMessage());
                             return null;
                         });
@@ -374,10 +385,14 @@ public class XenonTest {
 
                     It("then calls the view deanon API", () -> {
                         verify(DeanonFetcher).fetch(argThat((JSONObject params) -> {
-                            assertThat(params.get("id").toString(), instanceOf(String.class));
-                            assertEquals(params.get("person").toString(), person.toString());
-                            assertEquals(apiKey, params.get("token"));
-                            assertThat(params.get("timestamp"), instanceOf(Double.class));
+                            try {
+                                assertThat(params.get("id").toString(), instanceOf(String.class));
+                                assertEquals(params.get("person").toString(), person.toString());
+                                assertEquals(apiKey, params.get("token"));
+                                assertThat(params.get("timestamp"), instanceOf(Double.class));
+                            } catch (JSONException err) {
+                                return false;
+                            }
                             return true;
                         }));
                     });
@@ -393,7 +408,11 @@ public class XenonTest {
                     });
                     It("then calls the view deanon API", () -> {
                         verify(DeanonFetcher).fetch(argThat((JSONObject params) -> {
-                            assertEquals(customKey, params.get("token"));
+                            try {
+                                assertEquals(customKey, params.get("token"));
+                            } catch (JSONException err) {
+                                return false;
+                            }
                             return true;
                         }));
                     });
@@ -420,7 +439,7 @@ public class XenonTest {
                         deanonFuture.completeExceptionally(new Throwable(error.toString()));
                         when(DeanonFetcher.fetch(ArgumentMatchers.any())).thenReturn(deanonFuture);
                         CompletableFuture<Json> result = unit.get().deanonymize(person);
-                        result.exceptionally((err)->{
+                        result.exceptionally((err) -> {
                             commitResult.set(err.getMessage());
                             return null;
                         });

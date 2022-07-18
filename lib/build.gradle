@@ -24,7 +24,7 @@ repositories {
     mavenCentral()
 }
 
-project.version = "0.0.3"
+project.version = "0.0.4"
 project.description = 'The Xenon View Java SDK is the Java SDK to interact with https://xenonview.com.'
 project.group = "io.github.xenonview-com"
 project.archivesBaseName = 'xenon-view-sdk'
@@ -60,7 +60,7 @@ publishing {
 
             groupId = "io.github.xenonview-com"
             artifactId = 'xenon-view-sdk'
-            version = '0.0.3'
+            version = '0.0.4'
             from components.java
 
             pom {
