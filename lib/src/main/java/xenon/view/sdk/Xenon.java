@@ -24,7 +24,7 @@ import java.util.concurrent.CompletionException;
 public class Xenon {
     static private String _id = UUID.randomUUID().toString();
     static private JSONArray _journey = new JSONArray();
-    static private String apiUrl = "";
+    static private String apiUrl = "https://app.xenonview.com";
     static private String apiKey = "";
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> deanonApi;
@@ -196,6 +196,11 @@ public class Xenon {
                 .put("token", apiKey)
                 .put("timestamp", timestamp())
                 .put("ignore-certificate-errors", allowSelfSigned);
+        if (apiKey.equals("")){
+            CompletableFuture<Json> result =  new CompletableFuture<>();
+            result.completeExceptionally(new Throwable("API Key not set."));
+            return result;
+        }
         reset();
         return journeyApi.instance(apiUrl).fetch(params)
                 .exceptionally(err -> {
@@ -215,6 +220,12 @@ public class Xenon {
                 .put("token", apiKey)
                 .put("timestamp", timestamp())
                 .put("ignore-certificate-errors", allowSelfSigned);
+
+        if (apiKey.equals("")){
+            CompletableFuture<Json> result =  new CompletableFuture<>();
+            result.completeExceptionally(new Throwable("API Key not set."));
+            return result;
+        }
 
         return deanonApi.instance(apiUrl).fetch(params);
     }

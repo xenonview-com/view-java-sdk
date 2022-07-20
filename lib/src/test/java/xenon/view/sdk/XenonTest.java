@@ -9,19 +9,16 @@ package xenon.view.sdk;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
-
 import xenon.view.sdk.api.Api;
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Json;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
@@ -41,6 +38,35 @@ class ApiType implements Api<Fetchable> {
 @Ginkgo4jConfiguration(threads = 1)
 public class XenonTest {
     {
+        Describe("View SDK Uninitialized", () -> {
+            Describe("when commiting", () -> {
+                AtomicReference<String> commitResult = new AtomicReference<>(null);
+                BeforeEach(() -> {
+                    CompletableFuture<Json> result = new Xenon().commit();
+                    result.exceptionally((err) -> {
+                        commitResult.set(err.getMessage());
+                        return null;
+                    });
+                });
+                It("then completes exceptionally upon commit", () -> {
+                    assertEquals("API Key not set.", commitResult.get());
+                });
+            });
+            Describe("when deanonymizing", () -> {
+                AtomicReference<String> deanonResult = new AtomicReference<>(null);
+                BeforeEach(() -> {
+                    CompletableFuture<Json> result = new Xenon().deanonymize(new JSONObject());
+                    result.exceptionally((err) -> {
+                        deanonResult.set(err.getMessage());
+                        return null;
+                    });
+                });
+                It("then completes exceptionally upon deanonymize", () -> {
+                    assertEquals("API Key not set.", deanonResult.get());
+                });
+            });
+
+        });
         Describe("View SDK", () -> {
             final String apiKey = "<token>";
             final String apiUrl = "https://localhost";
