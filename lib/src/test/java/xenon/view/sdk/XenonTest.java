@@ -208,9 +208,9 @@ public class XenonTest {
                         unit.get().event(event);
                         unit.get().event(event);
                     });
-                    It("then has a journey with a single event", () -> {
+                    It("then has a journey with a count of 2", () -> {
                         assertThat(journeyStr.get(), containsString(
-                                "{\"funnel\":\"funnel\",\"action\":\"test\",\"timestamp\":"
+                                "{\"funnel\":\"funnel\",\"count\":2,\"action\":\"test\",\"timestamp\":"
                         ));
                         assertEquals(1, unit.get().journey().length());
                     });
@@ -220,9 +220,9 @@ public class XenonTest {
                         unit.get().event(event2);
                         unit.get().event(event2);
                     });
-                    It("then has a journey with a single event", () -> {
+                    It("then has a journey with a count of 2", () -> {
                         assertThat(journeyStr.get(), containsString(
-                                "{\"action\":\"test\",\"category\":\"category\",\"timestamp\":"
+                                "{\"count\":2,\"action\":\"test\",\"category\":\"category\",\"timestamp\":"
                         ));
                         assertEquals(1, unit.get().journey().length());
                     });

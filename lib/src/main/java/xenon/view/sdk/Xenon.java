@@ -160,6 +160,9 @@ public class Xenon {
                     (last.has("category") && content.has("category"))) {
                 if (last.get("action") != content.get("action")) {
                     journey.put(content);
+                } else {
+                    int count = content.has("count") ? content.getInt("count") : 1;
+                    content.put("count", count+1);
                 }
             } else {
                 journey.put(content);
