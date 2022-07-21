@@ -10,6 +10,8 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 ## <a name="whats-new"></a>
 ## What's New
+* v0.0.7 - Handle multithreading more deterministically 
+* v0.0.6 - Fail faster for APIKEY not set.
 * v0.0.5 - Smart defaults and handling of APIKEY not set.
 * v0.0.4 - Support Android
 * v0.0.3 - Fix: isEmpty() doesn't work in Android
@@ -20,25 +22,25 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.5/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.7/jar):
 
 Via maven:
 ```xml
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-xenon-sdk</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.7</version>
 </dependency>
 ```
 
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.5'
+implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.7'
 ```
 
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.5")
+implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.7")
 ```
 ## <a name="how-to-use"></a>
 ## How to use

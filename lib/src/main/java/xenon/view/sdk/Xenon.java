@@ -22,14 +22,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class Xenon {
-    static private String _id = UUID.randomUUID().toString();
-    static private JSONArray _journey = new JSONArray();
-    static private String apiUrl = "https://app.xenonview.com";
-    static private String apiKey = "";
+    static volatile private String _id = UUID.randomUUID().toString();
+    static volatile private JSONArray _journey = new JSONArray();
+    static volatile private String apiUrl = "https://app.xenonview.com";
+    static volatile private String apiKey = "";
+    static volatile private boolean allowSelfSigned = false;
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> deanonApi;
     private JSONArray restoreJourney;
-    static private boolean allowSelfSigned = false;
 
     public Xenon(){
         journeyApi = realApi(JourneyApi::new);
@@ -40,6 +40,12 @@ public class Xenon {
         this();
         Xenon.apiKey = _apiKey;
         Xenon.apiUrl = "https://app.xenonview.com";
+    }
+
+    public Xenon(String _apiKey, Api<Fetchable> _journeyApi){
+        this();
+        Xenon.apiKey = _apiKey;
+        journeyApi = _journeyApi;
     }
 
     public Xenon(String _apiKey, boolean _allowSelfSigned){
@@ -59,6 +65,11 @@ public class Xenon {
 
     public Xenon(String _apiKey, String _apiUrl, Api<Fetchable> _journeyApi){
         this(_apiKey, _apiUrl);
+        journeyApi = _journeyApi;
+    }
+
+    public Xenon(Api<Fetchable> _journeyApi){
+        this();
         journeyApi = _journeyApi;
     }
 
@@ -189,18 +200,14 @@ public class Xenon {
         this.restoreJourney = new JSONArray();
     }
 
-    public CompletableFuture<Json> commit() throws JSONException {
+    public CompletableFuture<Json> commit() throws JSONException, Throwable {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("journey", journey())
                 .put("token", apiKey)
                 .put("timestamp", timestamp())
                 .put("ignore-certificate-errors", allowSelfSigned);
-        if (apiKey.equals("")){
-            CompletableFuture<Json> result =  new CompletableFuture<>();
-            result.completeExceptionally(new Throwable("API Key not set."));
-            return result;
-        }
+        if (apiKey.equals("")) throw new Throwable("API Key not set.");
         reset();
         return journeyApi.instance(apiUrl).fetch(params)
                 .exceptionally(err -> {
@@ -213,20 +220,14 @@ public class Xenon {
                 });
     }
 
-    public CompletableFuture<Json> deanonymize(JSONObject person) throws JSONException {
+    public CompletableFuture<Json> deanonymize(JSONObject person) throws JSONException, Throwable {
         JSONObject params = (new JSONObject())
                 .put("id", id())
                 .put("person", person)
                 .put("token", apiKey)
                 .put("timestamp", timestamp())
                 .put("ignore-certificate-errors", allowSelfSigned);
-
-        if (apiKey.equals("")){
-            CompletableFuture<Json> result =  new CompletableFuture<>();
-            result.completeExceptionally(new Throwable("API Key not set."));
-            return result;
-        }
-
+        if (apiKey.equals("")) throw new Throwable("API Key not set.");
         return deanonApi.instance(apiUrl).fetch(params);
     }
 

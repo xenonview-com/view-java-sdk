@@ -39,33 +39,53 @@ class ApiType implements Api<Fetchable> {
 public class XenonTest {
     {
         Describe("View SDK Uninitialized", () -> {
-            Describe("when commiting", () -> {
-                AtomicReference<String> commitResult = new AtomicReference<>(null);
-                BeforeEach(() -> {
-                    CompletableFuture<Json> result = new Xenon().commit();
-                    result.exceptionally((err) -> {
-                        commitResult.set(err.getMessage());
-                        return null;
-                    });
-                });
-                It("then completes exceptionally upon commit", () -> {
-                    assertEquals("API Key not set.", commitResult.get());
-                });
-            });
-            Describe("when deanonymizing", () -> {
-                AtomicReference<String> deanonResult = new AtomicReference<>(null);
-                BeforeEach(() -> {
-                    CompletableFuture<Json> result = new Xenon().deanonymize(new JSONObject());
-                    result.exceptionally((err) -> {
-                        deanonResult.set(err.getMessage());
-                        return null;
-                    });
-                });
-                It("then completes exceptionally upon deanonymize", () -> {
-                    assertEquals("API Key not set.", deanonResult.get());
+            It("then throws upon commit", () -> {
+                assertThrows(Throwable.class, () -> {
+                    new Xenon().commit();
                 });
             });
 
+            It("then throws upon deanonymize", () -> {
+                assertThrows(Throwable.class, () -> {
+                    new Xenon().deanonymize(new JSONObject());
+                });
+            });
+
+        });
+        Describe("View SDK Concurrency", () -> {
+            final String apiKey = "<token>";
+            final String apiUrl = "https://app.xenonview.com";
+            final Fetchable JourneyFetcher = mock(Fetchable.class);
+            final Api<Fetchable> JourneyApi = mock(ApiType.class);
+            final CompletableFuture<Json> journeyFuture = new CompletableFuture<>();
+
+            It("then gets API key from other thread", () -> {
+                when(JourneyApi.instance(apiUrl)).thenReturn(JourneyFetcher);
+                journeyFuture.complete(new Json(""));
+                when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
+                class SetsKey extends Thread {
+                    public void run(){
+                        new Xenon(apiKey, JourneyApi);
+                    }
+                }
+                class ExpectsSetKey extends Thread {
+                    public void run(){
+                        try{
+                            new Xenon(JourneyApi).commit();
+                        } catch (Throwable err) {
+                            System.out.println(err.getMessage());
+                            System.out.println(err.toString());
+                            fail();
+                        }
+                    }
+                }
+                ExpectsSetKey myThread2 = new ExpectsSetKey();
+                SetsKey myThread = new SetsKey();
+                myThread.start();
+                myThread2.start();
+                myThread.join();
+                myThread2.join();
+            });
         });
         Describe("View SDK", () -> {
             final String apiKey = "<token>";
