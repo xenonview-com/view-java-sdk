@@ -92,7 +92,6 @@ This adds platform details for each [outcome](#outcome). Typically, this would b
 ```java
 import xenon.view.sdk.Xenon;
 
-// to initialize Xenon View after construction
 final Xenon xenon = new Xenon();
 xenon.init('<API KEY>');
 final String softwareVersion = "5.1.5";
