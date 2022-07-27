@@ -10,6 +10,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 ## <a name="whats-new"></a>
 ## What's New
+* v0.0.10 - Add new platform method.
 * v0.0.9 - Duplicate steps ready.
 * v0.0.8 - Count duplicate steps instead of dropping them.
 * v0.0.7 - Handle multithreading more deterministically 
@@ -24,25 +25,25 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.9/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.10/jar):
 
 Via maven:
 ```xml
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-xenon-sdk</artifactId>
-  <version>0.0.9</version>
+  <version>0.0.10</version>
 </dependency>
 ```
 
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.9'
+implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.10'
 ```
 
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.9")
+implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.10")
 ```
 ## <a name="how-to-use"></a>
 ## How to use
@@ -71,10 +72,40 @@ xenon.init('<API KEY>');
 Of course, you'll have to make the following modifications to the above code:
 - Replace `<API KEY>` with your [api key](https://xenonview.com/api-get)
 
+### Platforming
+After you have initialized View, you can optionally specify platform details such as:
+- Operating System version
+- Device model (Pixel, Docker Container, Linux VM, Dell Server, etc.)
+- Software version of your application.
+
+```java
+import xenon.view.sdk.Xenon;
+
+final String softwareVersion = "5.1.5";
+final String deviceModel = "Pixel 4 XL";
+final String operatingSystemVersion = "Android 12.0";
+
+// you can add platform details to outcomes
+new Xenon().platform(softwareVersion, deviceModel, operatingSystemVersion);
+```
+This adds platform details for each [outcome](#outcome). Typically, this would be set once at initialization:
+```java
+import xenon.view.sdk.Xenon;
+
+// to initialize Xenon View after construction
+final Xenon xenon = new Xenon();
+xenon.init('<API KEY>');
+final String softwareVersion = "5.1.5";
+final String deviceModel = "Pixel 4 XL";
+final String operatingSystemVersion = "Android 12.0";
+xenon.platform(softwareVersion, deviceModel, operatingSystemVersion);
+```
+
 ### Add Journeys
 After you have initialized View, you can start collecting journeys.
 
 There are a few helper methods you can use:
+#### <a name="outcome"></a>
 #### Outcome
 You can use this method to add an outcome to the journey.
 

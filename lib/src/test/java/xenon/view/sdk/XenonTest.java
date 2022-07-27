@@ -64,13 +64,13 @@ public class XenonTest {
                 journeyFuture.complete(new Json(""));
                 when(JourneyFetcher.fetch(ArgumentMatchers.any())).thenReturn(journeyFuture);
                 class SetsKey extends Thread {
-                    public void run(){
+                    public void run() {
                         new Xenon(apiKey, JourneyApi);
                     }
                 }
                 class ExpectsSetKey extends Thread {
-                    public void run(){
-                        try{
+                    public void run() {
+                        try {
                             new Xenon(JourneyApi).commit();
                         } catch (Throwable err) {
                             System.out.println(err.getMessage());
@@ -172,15 +172,54 @@ public class XenonTest {
                 });
             });
             Describe("when adding an outcome", () -> {
+                final String softwareVersion = "5.1.5";
+                final String deviceModel = "Pixel 4 XL";
+                final String operatingSystemVersion = "Android 12.0";
                 final String outcome = "<outcome>";
                 final String action = "<custom action>";
-                BeforeEach(() -> {
-                    unit.get().outcome(outcome, action);
+                Describe("when no platform set", () -> {
+                    BeforeEach(() -> {
+                        unit.get().outcome(outcome, action);
+                    });
+                    It("then adds an outcome to journey", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"<custom action>\",\"outcome\":\"<outcome>\",\"timestamp\":"
+                        ));
+                    });
                 });
-                It("then adds an outcome to journey", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"action\":\"<custom action>\",\"outcome\":\"<outcome>\",\"timestamp\":"
-                    ));
+                Describe("when platform set and then unset", () -> {
+                    BeforeEach(() -> {
+                        unit.get().platform(softwareVersion, deviceModel, operatingSystemVersion);
+                        unit.get().removePlatform();
+                        unit.get().outcome(outcome, action);
+                    });
+                    It("then adds an outcome to journey", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"<custom action>\",\"outcome\":\"<outcome>\",\"timestamp\":"
+                        ));
+                    });
+                });
+                Describe("when platform set", () -> {
+                    BeforeEach(() -> {
+                        unit.get().platform(softwareVersion, deviceModel, operatingSystemVersion);
+                        unit.get().outcome(outcome, action);
+                    });
+                    It("then adds an outcome to journey", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"<custom action>\",\"outcome\":\"<outcome>\","
+                        ));
+                        assertThat(journeyStr.get(), containsString(
+                                "\"timestamp\":"
+                        ));
+                    });
+                    It("then has platform details on the outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "\"platform\":{\"operatingSystemVersion\":\"Android 12.0\",\"deviceModel\":\"Pixel 4 XL\",\"softwareVersion\":\"5.1.5\"}"
+                        ));
+                    });
+                    AfterEach(() -> {
+                        unit.get().removePlatform();
+                    });
                 });
             });
             Describe("when adding an event", () -> {

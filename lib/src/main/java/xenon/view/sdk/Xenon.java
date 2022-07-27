@@ -27,6 +27,7 @@ public class Xenon {
     static volatile private String apiUrl = "https://app.xenonview.com";
     static volatile private String apiKey = "";
     static volatile private boolean allowSelfSigned = false;
+    static volatile private JSONObject platform = new JSONObject();
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> deanonApi;
     private JSONArray restoreJourney;
@@ -134,7 +135,16 @@ public class Xenon {
         JSONObject content = new JSONObject();
         content.put("outcome", outcome);
         content.put("action", action);
+        if(Xenon.platform.length() > 0) content.put("platform", Xenon.platform);
         journeyAdd(content);
+    }
+
+    public void platform(String softwareVersion, String deviceModel, String operatingSystemVersion) throws JSONException {
+        Xenon.platform = new JSONObject(){{
+            put("softwareVersion", softwareVersion);
+            put("deviceModel", deviceModel);
+            put("operatingSystemVersion", operatingSystemVersion);
+        }};
     }
 
     public void event(JSONObject event) throws JSONException {
@@ -236,5 +246,9 @@ public class Xenon {
 
     public boolean selfSignedAllowed(){
         return allowSelfSigned;
+    }
+
+    public void removePlatform(){
+        Xenon.platform = new JSONObject();
     }
 }
