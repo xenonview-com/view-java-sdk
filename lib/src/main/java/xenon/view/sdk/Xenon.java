@@ -251,4 +251,8 @@ public class Xenon {
     public void removePlatform(){
         Xenon.platform = new JSONObject();
     }
+
+    public void newId() {
+        Xenon._id = UUID.randomUUID().toString();
+    }
 }

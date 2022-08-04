@@ -140,6 +140,14 @@ public class XenonTest {
                     unit.get().id(UUID.randomUUID().toString());
                 });
             });
+            Describe("when id regenerated", () -> {
+                It("then has set id", () -> {
+                    final String previousId = unit.get().id();
+                    unit.get().newId();
+                    assertNotEquals(previousId, unit.get().id());
+                    assertNotNull(unit.get().id());
+                });
+            });
             Describe("when initialized and previous journey", () -> {
                 BeforeEach(() -> {
                     unit.get().pageView("test");

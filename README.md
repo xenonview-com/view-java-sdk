@@ -10,6 +10,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 ## <a name="whats-new"></a>
 ## What's New
+* v0.0.11 - Regenerate Journey ID with newId function.
 * v0.0.10 - Add new platform method.
 * v0.0.9 - Duplicate steps ready.
 * v0.0.8 - Count duplicate steps instead of dropping them.
@@ -25,25 +26,25 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.10/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.11/jar):
 
 Via maven:
 ```xml
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-xenon-sdk</artifactId>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
 </dependency>
 ```
 
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.10'
+implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.11'
 ```
 
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.10")
+implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.11")
 ```
 ## <a name="how-to-use"></a>
 ## How to use
@@ -187,16 +188,27 @@ JSONObject person = new JSONObject(){{
     put("email","javatest@example.com");
 }};
 new Xenon().deanonymize(person);
+
+// you can also deanonymize with a user ID:
+JSONObject person = new JSONObject(){{
+    put("UUID","<some unique ID>");
+}};
+new Xenon().deanonymize(person);
 ```
-This deanonymizes every journey committed to a particular user.
+This deanonymizes every journey committed to a particular user. 
+
+> **Note:** With journeys that span multiple platforms (eg. Website->Android->API backend), you can merge the journeys by deanonymizing on each platform.
 
 
 ### Journey IDs
 Each Journey has an ID akin to a session. After an Outcome occurs the ID remains the same to link all the Journeys. If you have a previous Journey in progress and would like to append to that, you can set the ID.
 
-*Note: For java, the Journey is a session persistent variable. If a previous browser session was created, the Journey ID will be reused.*
+> **Note:** For java, the ID is a static variable. For multiple threads, the Journey ID will be reused.
 
-After you have initialized the Xenon singleton, you can xenon or set the Journey (Session) ID:
+After you have initialized the Xenon singleton, you can:
+1. Use the default UUID
+2. Set the Journey (Session) ID
+3. Regenerate a new UUID
 
 ```java
 import xenon.view.sdk.Xenon;
@@ -211,12 +223,19 @@ assertNotEqual("",xenon.id())
 final String testId="<some random uuid>";
 xenon.id(testId);
 assertEquals(testId, xenon.id());
+
+// lastly you can generate a new one (usefull for serialized async operations that are for different customers)
+xenon.newId()
+assertNotNull(xenon.id());
+assertNotEqual("",xenon.id())
+
 ```
+>**Note: Support has not been added for multithreaded operations for different customers, please contact maintainer if needed.**
 
 ### Error handling
 In the event of an API error when committing, the method returns a [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
 
-Note: The default handling of this situation will restore the journey (appending newly added pageViews, events, etc.) for future committing. If you want to do something special, you can do so like this:
+>**Note:** The default handling of this situation will restore the journey (appending newly added pageViews, events, etc.) for future committing. If you want to do something special, you can do so like this:
 
 ```java
 import xenon.view.sdk.Xenon;
