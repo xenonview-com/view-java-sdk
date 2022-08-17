@@ -43,6 +43,23 @@ dependencies {
     testImplementation "org.mockito:mockito-core:3.+"
 }
 
+task depsJar(type: Jar) {
+//    dependsOn clean
+    destinationDirectory.set(file("$buildDir/deps"))
+    archiveClassifier.set("dependencies")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Class-Path': configurations.compileClasspath.collect { it.getName() }.join(' '),
+                'Implementation-Title': project.archivesBaseName+"-dependencies",
+                'Implementation-Version': project.version
+        )
+    }
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 testing {
     suites {
         // Configure the built-in test suite

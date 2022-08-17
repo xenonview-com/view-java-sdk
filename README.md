@@ -46,6 +46,14 @@ Via gradle (kolin):
 ```kotlin
 implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.11")
 ```
+
+Via jar download (maven central):
+Download required Jars and import as libraries into your project:
+
+[Download Jar](https://repo1.maven.org/maven2/io/github/xenonview-com/xenon-view-sdk/0.0.11/xenon-view-sdk-0.0.11.jar)
+
+[Download Dependencies Jar]()
+
 ## <a name="how-to-use"></a>
 ## How to use
 
@@ -224,7 +232,7 @@ final String testId="<some random uuid>";
 xenon.id(testId);
 assertEquals(testId, xenon.id());
 
-// lastly you can generate a new one (usefull for serialized async operations that are for different customers)
+// lastly you can generate a new one (useful for serialized async operations that are for different customers)
 xenon.newId()
 assertNotNull(xenon.id());
 assertNotEqual("",xenon.id())
