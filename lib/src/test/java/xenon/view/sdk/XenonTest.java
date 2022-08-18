@@ -180,11 +180,21 @@ public class XenonTest {
                 });
             });
             Describe("when adding an outcome", () -> {
-                final String softwareVersion = "5.1.5";
-                final String deviceModel = "Pixel 4 XL";
-                final String operatingSystemVersion = "Android 12.0";
+                final String softwareVersion = "5.1.9.alpha";
+                final String deviceModel = "Google Pixel 4 XL";
+                final String operatingSystemVersion = "Google - 12";
                 final String outcome = "<outcome>";
                 final String action = "<custom action>";
+                Describe("when no action provided", () -> {
+                    BeforeEach(() -> {
+                        unit.get().outcome(outcome, null);
+                    });
+                    FIt("then adds an outcome to journey", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"outcome\":\"<outcome>\",\"timestamp\":"
+                        ));
+                    });
+                });
                 Describe("when no platform set", () -> {
                     BeforeEach(() -> {
                         unit.get().outcome(outcome, action);

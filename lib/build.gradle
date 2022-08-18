@@ -12,6 +12,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
+    id "com.github.breadmoirai.github-release" version "2.3.7"
 }
 
 java {
@@ -24,7 +25,7 @@ repositories {
     mavenCentral()
 }
 
-project.version = "0.0.11"
+project.version = "0.0.12-snap"
 project.description = 'The Xenon View Java SDK is the Java SDK to interact with https://xenonview.com.'
 project.group = "io.github.xenonview-com"
 project.archivesBaseName = 'xenon-view-sdk'
@@ -44,7 +45,6 @@ dependencies {
 }
 
 task depsJar(type: Jar) {
-//    dependsOn clean
     destinationDirectory.set(file("$buildDir/deps"))
     archiveClassifier.set("dependencies")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -59,6 +59,16 @@ task depsJar(type: Jar) {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
+githubRelease {
+    def deps = file("$project.buildDir/deps").listFiles();
+    def libs = jar.destinationDir.listFiles();
+    token project.githubToken
+    owner "xenonview-com"
+    repo "view-java-sdk"
+    releaseAssets deps, libs
+}
+
 
 testing {
     suites {
@@ -131,4 +141,14 @@ signing {
         }
     }
     sign publishing.publications
+}
+
+task releaseAll {
+    dependsOn 'clean'
+    dependsOn 'build'
+    dependsOn 'depsJar'
+    dependsOn 'githubRelease'
+    tasks.findByName('build').mustRunAfter 'clean'
+    tasks.findByName('depsJar').mustRunAfter 'build'
+    tasks.findByName('githubRelease').mustRunAfter 'depsJar'
 }
