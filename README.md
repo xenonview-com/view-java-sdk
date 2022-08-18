@@ -1,4 +1,4 @@
-# xenon-xenon-sdk
+# xenon-view-sdk
 The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xenonview.com).
 
 **Table of contents:**
