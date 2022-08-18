@@ -27,14 +27,14 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.12/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.0.12/jar):
 
 ## <a name="maven"></a>
 Via maven:
 ```xml
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
-  <artifactId>xenon-xenon-sdk</artifactId>
+  <artifactId>xenon-view-sdk</artifactId>
   <version>0.0.12</version>
 </dependency>
 ```
@@ -42,13 +42,13 @@ Via maven:
 ## <a name="gradle-groovy"></a>
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.12'
+implementation 'io.github.xenonview-com:xenon-view-sdk:0.0.12'
 ```
 
 ## <a name="gradle-kotlin"></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.12")
+implementation("io.github.xenonview-com:xenon-view-sdk:0.0.12")
 ```
 
 ## <a name="download-jar"></a>
