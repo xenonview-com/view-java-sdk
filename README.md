@@ -55,7 +55,7 @@ implementation("io.github.xenonview-com:xenon-view-sdk:0.0.12")
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
-[Download Jar](https://repo1.maven.org/maven2/io/github/xenonview-com/xenon-view-sdk/0.0.12/xenon-view-sdk-0.0.12.jar)  
+[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.0.12/xenon-view-sdk-0.0.12.jar)  
 [Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.0.12/xenon-view-sdk-0.0.12-dependencies.jar)
 
 ## <a name="how-to-use"></a>
