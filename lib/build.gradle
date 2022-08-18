@@ -145,10 +145,10 @@ signing {
 
 task releaseAll {
     dependsOn 'clean'
-    dependsOn 'build'
+    dependsOn 'publish'
     dependsOn 'depsJar'
     dependsOn 'githubRelease'
-    tasks.findByName('build').mustRunAfter 'clean'
-    tasks.findByName('depsJar').mustRunAfter 'build'
+    tasks.findByName('publish').mustRunAfter 'clean'
+    tasks.findByName('depsJar').mustRunAfter 'publish'
     tasks.findByName('githubRelease').mustRunAfter 'depsJar'
 }
