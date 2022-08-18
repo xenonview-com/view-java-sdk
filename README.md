@@ -10,6 +10,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 ## <a name="whats-new"></a>
 ## What's New
+* v0.0.12 - Build a dependencies fat jar with every release for easy install.
 * v0.0.11 - Regenerate Journey ID with newId function.
 * v0.0.10 - Add new platform method.
 * v0.0.9 - Duplicate steps ready.
@@ -26,7 +27,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 ## <a name="installation"></a>
 ## Installation
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.11/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-xenon-sdk/0.0.12/jar):
 
 ## <a name="maven"></a>
 Via maven:
@@ -34,28 +35,28 @@ Via maven:
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-xenon-sdk</artifactId>
-  <version>0.0.11</version>
+  <version>0.0.12</version>
 </dependency>
 ```
 
 ## <a name="gradle-groovy"></a>
 Via gradle (groovy):
 ```groovy
-implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.11'
+implementation 'io.github.xenonview-com:xenon-xenon-sdk:0.0.12'
 ```
 
 ## <a name="gradle-kotlin"></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.11")
+implementation("io.github.xenonview-com:xenon-xenon-sdk:0.0.12")
 ```
 
 ## <a name="download-jar"></a>
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
-[Download Jar](https://repo1.maven.org/maven2/io/github/xenonview-com/xenon-view-sdk/0.0.11/xenon-view-sdk-0.0.11.jar)  
-[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.0.11/xenon-view-sdk-0.0.11-dependencies.jar)
+[Download Jar](https://repo1.maven.org/maven2/io/github/xenonview-com/xenon-view-sdk/0.0.12/xenon-view-sdk-0.0.12.jar)  
+[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.0.11/xenon-view-sdk-0.0.12-dependencies.jar)
 
 ## <a name="how-to-use"></a>
 ## How to use
