@@ -38,6 +38,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 <br/>
 
 ## What"s New <a id="whats-new"></a>
+* v0.1.1 - Android Fixups
 * v0.1.0 - SDK redesign
 
 <br/>
@@ -280,7 +281,7 @@ It provides code examples for each of the calls.
 <br/>
 
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.0/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.1/jar):
 
 #### <a name="maven"></a>
 Via maven:
@@ -288,28 +289,28 @@ Via maven:
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-view-sdk</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
 #### <a name="gradle-groovy"></a>
 Via gradle (groovy):
 ```groovy
-implementation "io.github.xenonview-com:xenon-view-sdk:0.1.0"
+implementation "io.github.xenonview-com:xenon-view-sdk:0.1.1"
 ```
 
 #### <a name="gradle-kotlin"></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-view-sdk:0.1.0")
+implementation("io.github.xenonview-com:xenon-view-sdk:0.1.1")
 ```
 
 #### <a name="download-jar"></a>
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
-[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.0/xenon-view-sdk-0.1.0.jar)  
-[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.0/xenon-view-sdk-0.1.0-dependencies.jar)
+[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.1/xenon-view-sdk-0.1.1.jar)  
+[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.1/xenon-view-sdk-0.1.1-dependencies.jar)
 
 <br/>
 

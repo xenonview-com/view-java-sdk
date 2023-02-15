@@ -17,6 +17,8 @@ import xenon.view.sdk.api.JourneyApi;
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Json;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -685,10 +687,21 @@ public class Xenon {
         storeJourney(journey);
     }
 
-    protected boolean isDuplicate(JSONObject last, JSONObject content) {
+    protected Set<String> toSet(Iterator<String> collection) {
+        HashSet<String> set = new HashSet<String>();
+        for (Iterator<String> it = collection; it.hasNext(); ) {
+            String item = it.next();
+            set.add(item);
+        }
+        return set;
+    }
 
-        final Set<String> lastKeys = last.keySet();
-        final Set<String> contentKeys = content.keySet();
+    protected boolean isDuplicate(JSONObject last, JSONObject content) throws JSONException{
+        Iterator<String> lastIterator = last.keys();
+        Iterator<String> contentIterator = content.keys();
+
+        final Set<String> lastKeys = this.toSet(lastIterator);
+        final Set<String> contentKeys = this.toSet(contentIterator);
 
         if (!lastKeys.containsAll(contentKeys)) return false;
         if (!contentKeys.contains("category") || !lastKeys.contains("category")) return false;
@@ -700,12 +713,12 @@ public class Xenon {
                 duplicateMilestone(last, content, lastKeys, contentKeys));
     }
 
-    protected boolean duplicateFeature(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) {
+    protected boolean duplicateFeature(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) throws JSONException {
         if (!content.get("category").equals("Feature") || !last.get("category").equals("Feature")) return false;
         return content.get("name").equals(last.get("name"));
     }
 
-    protected boolean duplicateContent(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) {
+    protected boolean duplicateContent(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) throws JSONException {
         if (!content.get("category").equals("Content") || !last.get("category").equals("Content")) return false;
         if (!contentKeys.contains("type") || !lastKeys.contains("type")) return true;
         if (!content.get("type").equals(last.get("type"))) return false;
@@ -715,7 +728,7 @@ public class Xenon {
         return content.get("details").equals(last.get("details"));
     }
 
-    protected boolean duplicateMilestone(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) {
+    protected boolean duplicateMilestone(JSONObject last, JSONObject content, Set<String> lastKeys, Set<String> contentKeys) throws JSONException {
         if (content.get("category").equals("Feature") || last.get("category").equals("Feature")) return false;
         if (content.get("category").equals("Content") || last.get("category").equals("Content")) return false;
         if (!content.get("name").equals(last.get("name"))) return false;
@@ -741,16 +754,27 @@ public class Xenon {
         JSONArray restoreJourney = this.restoreJourney;
         if (currentJourney.length() > 0) {
             JSONArray result = new JSONArray();
-            for (int i = 0; i < restoreJourney.length(); i++) {
-                result.put(restoreJourney.get(i));
-            }
-            for (int i = 0; i < currentJourney.length(); i++) {
-                result.put(currentJourney.get(i));
-            }
+            result = addJourneyTo(restoreJourney, result);
+            result = addJourneyTo(currentJourney, result);
             restoreJourney = result;
         }
         storeJourney(restoreJourney);
         this.restoreJourney = new JSONArray();
+    }
+
+    protected JSONArray addJourneyTo(JSONArray result, JSONArray journey) {
+        for (int i = 0; i < journey.length(); i++) {
+            addJourneyIndexTo(result, journey, i);
+        }
+        return result;
+    }
+
+    protected void addJourneyIndexTo(JSONArray result, JSONArray journey, int i) {
+        try {
+            result.put(journey.get(i));
+        } catch (JSONException ignore) {
+            // swallow
+        }
     }
 
     public boolean selfSignedAllowed() {

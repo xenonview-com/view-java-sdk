@@ -126,6 +126,11 @@ public class XenonTest {
             It("then has default id", () -> {
                 assertNotEquals("", unit.get().id());
             });
+            It("swallows exception when adding non-existent journey step", ()-> {
+                JSONArray in = new JSONArray();
+                JSONArray out = new JSONArray();
+                unit.get().addJourneyIndexTo(out, in, 1);
+            });
             It("can be constructed using self signed cert", () -> {
                 Xenon v1 = new Xenon(apiKey, true);
                 Xenon v2 = new Xenon(apiKey, apiUrl, true);
