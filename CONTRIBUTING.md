@@ -2,8 +2,7 @@
 
 ## Dependencies
 
-* yarn
-* chromedriver
+* gradle
 
 
 ## Installing library dependencies
@@ -11,7 +10,7 @@
 Before development, you'll need to install development dependencies (npm packages) by running:
 
 ```bash
-yarn install
+gradle build
 ```
 
 ## Running tests
@@ -19,7 +18,7 @@ yarn install
 You can run the tests for the whole project in the root directory by simply running:
 
 ```bash
-yarn test
+gradle test
 ```
 
 The following sections show how to run testing variants during development.
@@ -35,7 +34,7 @@ yarn test:watch
 
 To run the tests in "coverage mode" (runs all tests then calculates coverage for each dir/file):
 ```bash
-yarn coverage
+gradle test jacocoTestReport
 ```
 
 # Publishing
@@ -45,7 +44,7 @@ _We (package maintainers) handle this step so this is more of internal notes:_
 To publish the package (we use ```np```, for help go [here](https://github.com/sindresorhus/np)):
 
 ```shell
-yarn release
+gradle releaseAll
 ```
 
 # Contributing

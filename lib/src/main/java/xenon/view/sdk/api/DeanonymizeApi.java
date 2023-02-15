@@ -29,6 +29,7 @@ public class DeanonymizeApi extends ApiBase {
     @Override
     public JSONObject params(JSONObject data) throws Throwable {
         JSONObject local = super.params(data);
+        if (!local.has("person")) throw new Throwable("No person data received.");
         return new JSONObject() {{
             put("uuid", local.getString("id"));
             put("timestamp", local.getDouble("timestamp"));

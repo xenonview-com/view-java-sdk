@@ -235,7 +235,7 @@ public class ApiBaseTest {
                             super(new Hashtable<String, Object>() {{
                                 put("skipName", true);
                             }}, jsonFetcher);
-                        }
+                        }   
 
                         public JSONObject params(JSONObject data) {
                             return parameters;

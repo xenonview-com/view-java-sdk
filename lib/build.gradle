@@ -20,12 +20,16 @@ java {
     withSourcesJar()
 }
 
+tasks {
+    javadoc.options.addStringOption("Xdoclint:none", "-quiet")
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
-project.version = "0.0.12"
+project.version = "0.1.0"
 project.description = 'The Xenon View Java SDK is the Java SDK to interact with https://xenonview.com.'
 project.group = "io.github.xenonview-com"
 project.archivesBaseName = 'xenon-view-sdk'
@@ -38,6 +42,7 @@ dependencies {
     //implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.json:json:20220320'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'junit:junit:4.13.1'
 
     // This dependency is used internally for testing only, and not exposed to consumers on their own compile classpath.
     testImplementation 'com.github.paulcwarren:ginkgo4j:1.+'
