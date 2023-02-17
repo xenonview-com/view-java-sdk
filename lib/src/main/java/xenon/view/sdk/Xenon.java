@@ -123,11 +123,15 @@ public class Xenon {
         Xenon.platform = new JSONObject();
     }
 
+    public void tag(String[] tags) throws JSONException {
+        tag(new JSONArray(tags));
+    }
+
     public void tag(JSONArray tags) throws JSONException {
         Xenon.tags = tags;
     }
 
-    public void unTag() {
+    public void untag() {
         Xenon.tags = new JSONArray();
     }
 

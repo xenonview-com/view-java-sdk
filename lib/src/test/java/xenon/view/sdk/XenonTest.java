@@ -221,7 +221,7 @@ public class XenonTest {
             Describe("when adding outcome after tags reset", () -> {
                 BeforeEach(() -> {
                     unit.get().tag(tags);
-                    unit.get().unTag();
+                    unit.get().untag();
                     unit.get().applicationInstalled();
                 });
                 It("then adds an outcome to journey", () -> {
@@ -231,25 +231,44 @@ public class XenonTest {
                 });
             });
             Describe("when adding outcome after tags", () -> {
-                BeforeEach(() -> {
-                    unit.get().tag(tags);
-                    unit.get().applicationInstalled();
+                Describe("when JSONArray", () -> {
+                    BeforeEach(() -> {
+                        unit.get().tag(tags);
+                        unit.get().applicationInstalled();
+                    });
+                    It("then adds an outcome to journey", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"superOutcome\":\"Application Installation\",\"outcome\":\"Installed\","
+                        ));
+                        assertThat(journeyStr.get(), containsString(
+                                "\"timestamp\":"
+                        ));
+                    });
+                    It("then has tags details on the outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "\"tags\":[\"aTag\"]"
+                        ));
+                    });
+                    AfterEach(() -> {
+                        unit.get().untag();
+                    });
                 });
-                It("then adds an outcome to journey", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"result\":\"success\",\"superOutcome\":\"Application Installation\",\"outcome\":\"Installed\","
-                    ));
-                    assertThat(journeyStr.get(), containsString(
-                            "\"timestamp\":"
-                    ));
-                });
-                It("then has tags details on the outcome", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "\"tags\":[\"aTag\"]"
-                    ));
-                });
-                AfterEach(() -> {
-                    unit.get().unTag();
+                Describe("when array literal", () -> {
+                    BeforeEach(() -> {
+                        final String tag = "aTag";
+                        final String[] tagsArray = {tag};
+
+                        unit.get().tag(tagsArray);
+                        unit.get().applicationInstalled();
+                    });
+                    It("then has tags details on the outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "\"tags\":[\"aTag\"]"
+                        ));
+                    });
+                    AfterEach(() -> {
+                        unit.get().untag();
+                    });
                 });
             });
 // Stock Business Outcomes tests
@@ -1244,27 +1263,31 @@ public class XenonTest {
                     });
                 });
                 Describe("when tags", () -> {
-                    BeforeEach(() -> {
-                        when(HeartbeatApi.instance(apiUrl)).thenReturn(HeartbeatFetcher);
-                        heartbeatFuture.complete(new Json(""));
-                        when(HeartbeatFetcher.fetch(ArgumentMatchers.any())).thenReturn(heartbeatFuture);
-                        unit.get().tag(new JSONArray(){{put("aTag");}});
-                        unit.get().heartbeat();
-                    });
-                    It("then calls the view heartbeat API", () -> {
-                        verify(HeartbeatFetcher).fetch(argThat((JSONObject params) -> {
-                            try {
-                                assertThat(params.get("id").toString(), instanceOf(String.class));
-                                assertThat(params.get("journey").toString(),
-                                        containsString("[{\"name\":\"heartbeating\",\"action\":\"Attempted\",\"category\":\"Feature\",\"timestamp\":"));
-                                assertEquals(apiKey, params.get("token"));
-                                assertEquals("aTag", params.getJSONArray("tags").get(0));
-                                assertThat(params.get("timestamp"), instanceOf(Double.class));
-                            } catch (JSONException err) {
-                                return false;
-                            }
-                            return true;
-                        }));
+                    Describe("when JSONArray", () -> {
+                        BeforeEach(() -> {
+                            when(HeartbeatApi.instance(apiUrl)).thenReturn(HeartbeatFetcher);
+                            heartbeatFuture.complete(new Json(""));
+                            when(HeartbeatFetcher.fetch(ArgumentMatchers.any())).thenReturn(heartbeatFuture);
+                            unit.get().tag(new JSONArray() {{
+                                put("aTag");
+                            }});
+                            unit.get().heartbeat();
+                        });
+                        It("then calls the view heartbeat API", () -> {
+                            verify(HeartbeatFetcher).fetch(argThat((JSONObject params) -> {
+                                try {
+                                    assertThat(params.get("id").toString(), instanceOf(String.class));
+                                    assertThat(params.get("journey").toString(),
+                                            containsString("[{\"name\":\"heartbeating\",\"action\":\"Attempted\",\"category\":\"Feature\",\"timestamp\":"));
+                                    assertEquals(apiKey, params.get("token"));
+                                    assertEquals("aTag", params.getJSONArray("tags").get(0));
+                                    assertThat(params.get("timestamp"), instanceOf(Double.class));
+                                } catch (JSONException err) {
+                                    return false;
+                                }
+                                return true;
+                            }));
+                        });
                     });
                 });
                 Describe("when platform", () -> {
