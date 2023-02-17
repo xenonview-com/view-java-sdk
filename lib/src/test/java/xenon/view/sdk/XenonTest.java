@@ -220,8 +220,8 @@ public class XenonTest {
             });
             Describe("when adding outcome after tags reset", () -> {
                 BeforeEach(() -> {
-                    unit.get().tag(tags);
-                    unit.get().untag();
+                    unit.get().variant(tags);
+                    unit.get().resetVariant();
                     unit.get().applicationInstalled();
                 });
                 It("then adds an outcome to journey", () -> {
@@ -233,7 +233,7 @@ public class XenonTest {
             Describe("when adding outcome after tags", () -> {
                 Describe("when JSONArray", () -> {
                     BeforeEach(() -> {
-                        unit.get().tag(tags);
+                        unit.get().variant(tags);
                         unit.get().applicationInstalled();
                     });
                     It("then adds an outcome to journey", () -> {
@@ -250,7 +250,7 @@ public class XenonTest {
                         ));
                     });
                     AfterEach(() -> {
-                        unit.get().untag();
+                        unit.get().resetVariant();
                     });
                 });
                 Describe("when array literal", () -> {
@@ -258,7 +258,7 @@ public class XenonTest {
                         final String tag = "aTag";
                         final String[] tagsArray = {tag};
 
-                        unit.get().tag(tagsArray);
+                        unit.get().variant(tagsArray);
                         unit.get().applicationInstalled();
                     });
                     It("then has tags details on the outcome", () -> {
@@ -267,7 +267,7 @@ public class XenonTest {
                         ));
                     });
                     AfterEach(() -> {
-                        unit.get().untag();
+                        unit.get().resetVariant();
                     });
                 });
             });
@@ -1268,7 +1268,7 @@ public class XenonTest {
                             when(HeartbeatApi.instance(apiUrl)).thenReturn(HeartbeatFetcher);
                             heartbeatFuture.complete(new Json(""));
                             when(HeartbeatFetcher.fetch(ArgumentMatchers.any())).thenReturn(heartbeatFuture);
-                            unit.get().tag(new JSONArray() {{
+                            unit.get().variant(new JSONArray() {{
                                 put("aTag");
                             }});
                             unit.get().heartbeat();

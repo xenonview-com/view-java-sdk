@@ -31,7 +31,7 @@ public class Xenon {
     static volatile private String apiKey = "";
     static volatile private boolean allowSelfSigned = false;
     static volatile private JSONObject platform = new JSONObject();
-    static volatile private JSONArray tags = new JSONArray();
+    static volatile private JSONArray variants = new JSONArray();
     private Api<Fetchable> journeyApi;
     private Api<Fetchable> heartbeatApi;
     private Api<Fetchable> deanonApi;
@@ -123,16 +123,16 @@ public class Xenon {
         Xenon.platform = new JSONObject();
     }
 
-    public void tag(String[] tags) throws JSONException {
-        tag(new JSONArray(tags));
+    public void variant(String[] names) throws JSONException {
+        variant(new JSONArray(names));
     }
 
-    public void tag(JSONArray tags) throws JSONException {
-        Xenon.tags = tags;
+    public void variant(JSONArray names) throws JSONException {
+        Xenon.variants = names;
     }
 
-    public void untag() {
-        Xenon.tags = new JSONArray();
+    public void resetVariant() {
+        Xenon.variants = new JSONArray();
     }
 
 // Stock Business Outcomes:
@@ -628,7 +628,7 @@ public class Xenon {
                 .put("ignore-certificate-errors", allowSelfSigned);
         if (apiKey.equals("")) throw new Throwable("API Key not set.");
         if (Xenon.platform.length() > 0) params.put("platform", Xenon.platform);
-        if (Xenon.tags.length() > 0) params.put("tags", Xenon.tags);
+        if (Xenon.variants.length() > 0) params.put("tags", Xenon.variants);
 
         reset();
 
@@ -668,7 +668,7 @@ public class Xenon {
 
     private void outcomeAdd(JSONObject content) throws JSONException {
         if (Xenon.platform.length() > 0) content.put("platform", Xenon.platform);
-        if (Xenon.tags.length() > 0) content.put("tags", Xenon.tags);
+        if (Xenon.variants.length() > 0) content.put("tags", Xenon.variants);
         journeyAdd(content);
     }
 

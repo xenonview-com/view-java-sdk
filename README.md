@@ -27,7 +27,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
     * [Commit Points](#commiting)
     * [Heartbeats](#heartbeat)
     * [Platforming](#platforming)
-    * [Tagging](#tagging)
+    * [Experiments](#experiments)
     * [Customer Journey Grouping](#deanonymizing-journeys)
     * [Other Considerations](#other)
         * [(Optional) Error Handling](#errors)
@@ -38,6 +38,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 <br/>
 
 ## What"s New <a id="whats-new"></a>
+* v0.1.4 - Rename tag to variant
 * v0.1.3 - Correct name for untag
 * v0.1.2 - Allow tags to take String []
 * v0.1.1 - Android Fixups
@@ -243,16 +244,16 @@ Once you have released your instrumented code, you can head to [XenonView](https
 
 ### Step 10 - Perform Experiments <a id="step-10"></a>
 
-There are multiple ways you can experiment using XenonView. We"ll focus here on three of the most common: time, platform, and tag based cohorts.
+There are multiple ways you can experiment using XenonView. We"ll focus here on three of the most common: time, platform, and variant based cohorts.
 
 #### Time-based cohorts
 Each Outcome and Milestone is timestamped. You can use this during the analysis phase to compare timeframes. A typical example is making a feature change.
 Knowing when the feature went to production, you can filter in the XenonView UI based on the timeframe before and the timeframe after to observe the results.
 
-#### Tag-based cohorts
-You can [tag](#tagging) any journey collection before collecting data. This will allow you to run A/B testing-type experiments (of course not limited to two).
-As an example, let"s say you have two alternate content/feature flows and you have a way to direct half of the users to Flow A and the other half to Flow B.
-You can tag each flow before the section of code that performs that flow. After collecting the data, you can filter in the XenonView UI based on each tag to
+#### Variant-based cohorts
+You can identify a journey collection as an [experiment](#experiments) before collecting data. This will allow you to run A/B testing-type experiments (of course not limited to two).
+As an example, let"s say you have two alternate content/feature variants and you have a way to direct half of the users to Variant A and the other half to Variant B.
+You can name each variant before the section of code that performs that journey. After collecting the data, you can filter in the XenonView UI based on each variant to
 observe the results.
 
 #### Platform-based cohorts
@@ -283,7 +284,7 @@ It provides code examples for each of the calls.
 <br/>
 
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.3/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.4/jar):
 
 #### <a name="maven"></a>
 Via maven:
@@ -291,28 +292,28 @@ Via maven:
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-view-sdk</artifactId>
-  <version>0.1.3</version>
+  <version>0.1.4</version>
 </dependency>
 ```
 
 #### <a name="gradle-groovy"></a>
 Via gradle (groovy):
 ```groovy
-implementation "io.github.xenonview-com:xenon-view-sdk:0.1.3"
+implementation "io.github.xenonview-com:xenon-view-sdk:0.1.4"
 ```
 
 #### <a name="gradle-kotlin"></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-view-sdk:0.1.3")
+implementation("io.github.xenonview-com:xenon-view-sdk:0.1.4")
 ```
 
 #### <a name="download-jar"></a>
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
-[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.3/xenon-view-sdk-0.1.3.jar)  
-[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.3/xenon-view-sdk-0.1.3-dependencies.jar)
+[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.4/xenon-view-sdk-0.1.4.jar)  
+[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.4/xenon-view-sdk-0.1.4-dependencies.jar)
 
 <br/>
 
@@ -1419,50 +1420,50 @@ xenon.platform(softwareVersion, deviceModel, operatingSystemName, operatingSyste
 
 [back to top](#contents)
 
-### Tagging  <a id="tagging"></a>
+### Experiments  <a id="experiments"></a>
 
-After you have initialized Xenon View, you can optionally tag customer journeys.
-Tagging helps when running experiments such as A/B testing.
+After you have initialized Xenon View, you can optionally name variants of customer journeys.
+Named variants facilitate running experiments such as A/B or split testing.
 
-> :memo: Note: You are not limited to just 2 (A or B); there can be many. Additionally, you can add multiple tags.
+> :memo: Note: You are not limited to just 2 (A or B); there can be many. Additionally, you can have multiple variant names.
 
 <br/>
 
-#### `tag()`
+#### `variant()`
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tag = "subscription-variant-A";
-final String[] tags = {tag};
+final String variantName = "subscription-variant-A";
+final String[] variantNames = {variantName};
 
-// you can add tag details to outcomes
-xenon.tag(tags);
+// you can name variants for to outcomes
+xenon.variant(variantNames);
 ```
 
-This adds tags to each outcome ([Saas](#saas)/[Ecom](#ecom)).
-Typically, you would Tag once you know the active experiment for this Customer:
+This adds variant names to each outcome while the variant in play ([Saas](#saas)/[Ecom](#ecom)).
+Typically, you would name a variant once you know the active experiment for this Customer:
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
 xenon.init("<API KEY>");
-let experimentTag = getExperiment();
-xenon.tag([experimentTag]);
+let experimentName = getExperiment();
+xenon.variant([experimentName]);
 ```
 
 <br/>
 
-#### `untag()`
+#### `resetVariants()`
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-// you can clear all tags with the untag method
-xenon.untag();
+// you can clear all variant names with the resetVariants method
+xenon.resetVariants();
 ```
 
 <br/>

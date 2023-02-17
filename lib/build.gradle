@@ -29,7 +29,7 @@ repositories {
     mavenCentral()
 }
 
-project.version = "0.1.3"
+project.version = "0.1.4"
 project.description = 'The Xenon View Java SDK is the Java SDK to interact with https://xenonview.com.'
 project.group = "io.github.xenonview-com"
 project.archivesBaseName = 'xenon-view-sdk'
