@@ -221,7 +221,7 @@ public class XenonTest {
             Describe("when adding outcome after tags reset", () -> {
                 BeforeEach(() -> {
                     unit.get().variant(tags);
-                    unit.get().resetVariant();
+                    unit.get().resetVariants();
                     unit.get().applicationInstalled();
                 });
                 It("then adds an outcome to journey", () -> {
@@ -250,7 +250,7 @@ public class XenonTest {
                         ));
                     });
                     AfterEach(() -> {
-                        unit.get().resetVariant();
+                        unit.get().resetVariants();
                     });
                 });
                 Describe("when array literal", () -> {
@@ -267,7 +267,7 @@ public class XenonTest {
                         ));
                     });
                     AfterEach(() -> {
-                        unit.get().resetVariant();
+                        unit.get().resetVariants();
                     });
                 });
             });

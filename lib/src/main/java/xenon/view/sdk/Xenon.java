@@ -131,7 +131,7 @@ public class Xenon {
         Xenon.variants = names;
     }
 
-    public void resetVariant() {
+    public void resetVariants() {
         Xenon.variants = new JSONArray();
     }
 
