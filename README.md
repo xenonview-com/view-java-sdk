@@ -1338,7 +1338,9 @@ import xenon.view.sdk.Xenon;
 final Xenon xenon = new Xenon();
 
 // you can commit a journey to Xenon View
-await xenon.commit();
+xenon.commit();
+// -OR-
+final Json json = xenon.commit().get();
 ```
 
 This call commits a customer journey to Xenon View for analysis.
@@ -1367,7 +1369,9 @@ import xenon.view.sdk.Xenon;
 final Xenon xenon = new Xenon();
 
 // you can heartbeat to Xenon View
-await xenon.heartbeat();
+xenon.heartbeat();
+// -OR-
+final Json json = xenon.heartbeat().get();
 ```
 
 
@@ -1507,6 +1511,8 @@ JSONObject person = new JSONObject(){{
     put("email","javatest@example.com");
 }};
 xenon.deanonymize(person);
+// -OR-
+final Json json = xenon.deanonymize().get();
 
 // you can also deanonymize with a user ID:
 JSONObject person = new JSONObject(){{
