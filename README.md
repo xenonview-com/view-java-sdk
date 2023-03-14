@@ -38,6 +38,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 <br/>
 
 ## What"s New <a id="whats-new"></a>
+* v0.1.7 - Add options for term/price for all subscription related calls.
 * v0.1.6 - Add initial subscriptions options for term/price.
 * v0.1.5 - Fix typo
 * v0.1.4 - Rename tag to variant
@@ -286,7 +287,7 @@ It provides code examples for each of the calls.
 <br/>
 
 
-You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.6/jar):
+You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.7/jar):
 
 #### <a name="maven"></a>
 Via maven:
@@ -294,28 +295,28 @@ Via maven:
 <dependency>
   <groupId>io.github.xenonview-com</groupId>
   <artifactId>xenon-view-sdk</artifactId>
-  <version>0.1.6</version>
+  <version>0.1.7</version>
 </dependency>
 ```
 
 #### <a name="gradle-groovy"></a>
 Via gradle (groovy):
 ```groovy
-implementation "io.github.xenonview-com:xenon-view-sdk:0.1.6"
+implementation "io.github.xenonview-com:xenon-view-sdk:0.1.7"
 ```
 
 #### <a name="gradle-kotlin"></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-view-sdk:0.1.6")
+implementation("io.github.xenonview-com:xenon-view-sdk:0.1.7")
 ```
 
 #### <a name="download-jar"></a>
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
-[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.6/xenon-view-sdk-0.1.6.jar)  
-[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.6/xenon-view-sdk-0.1.6-dependencies.jar)
+[Download Jar](https://s01.oss.sonatype.org/content/repositories/releases/io/github/xenonview-com/xenon-view-sdk/0.1.7/xenon-view-sdk-0.1.7.jar)  
+[Download Dependencies Jar](https://github.com/xenonview-com/view-java-sdk/releases/download/v0.1.7/xenon-view-sdk-0.1.7-dependencies.jar)
 
 <br/>
 
@@ -491,6 +492,8 @@ final Xenon xenon = new Xenon();
 final String tierSilver = "Silver Monthly";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; // optional
 
@@ -499,6 +502,9 @@ xenon.initialSubscription(tierSilver, method);
 // ...
 // Successful subscription of the middle tier
 xenon.initialSubscription(tierGold);
+// ...
+// Successful subscription of the middle tier with term and price
+xenon.initialSubscription(tierGold, term, price, method);
 // ...
 // Successful subscription to the top tier
 xenon.initialSubscription(tierPlatium);
@@ -519,6 +525,8 @@ final Xenon xenon = new Xenon();
 final String tierSilver = "Silver Monthly";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; // optional
 
@@ -527,6 +535,9 @@ xenon.subscriptionDeclined(tierSilver);
 // ...
 // Unsuccessful subscription of the middle tier
 xenon.subscriptionDeclined(tierGold);
+// ...
+// Unsuccessful subscription of the middle tier with term and price
+xenon.subscriptionDeclined(tierGold, term, price, method);
 // ...
 // Unsuccessful subscription to the top tier
 xenon.subscriptionDeclined(tierPlatium);
@@ -552,6 +563,8 @@ final Xenon xenon = new Xenon();
 final String tierSilver = "Silver Monthly";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; //optional
 
@@ -560,6 +573,9 @@ xenon.subscriptionRenewed(tierSilver, method);
 // ...
 // Successful renewal of the middle tier
 xenon.subscriptionRenewed(tierGold);
+// ...
+// Successful renewal of the middle tier with term and price
+xenon.subscriptionRenewed(tierGold, term, price, method);
 // ...
 // Successful renewal of the top tier
 xenon.subscriptionRenewed(tierPlatium);
@@ -580,6 +596,8 @@ final Xenon xenon = new Xenon();
 final String tierSilver = "Silver Monthly";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; //optional
 
@@ -588,6 +606,9 @@ xenon.subscriptionCanceled(tierSilver);
 // ...
 // Canceled subscription of the middle tier
 xenon.subscriptionCanceled(tierGold);
+// ...
+// Canceled subscription of the middle tier with term and price
+xenon.subscriptionCanceled(tierGold, term, price, method);
 // ...
 // Canceled subscription of the top tier
 xenon.subscriptionCanceled(tierPlatium);
@@ -612,6 +633,8 @@ final Xenon xenon = new Xenon();
 
 final String tierGold = "Gold Monthly";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualGold = "Gold Annual";
 final String method = "Stripe"; // optional
 
@@ -619,6 +642,9 @@ final String method = "Stripe"; // optional
 
 // Successful upsell of the middle tier with Stripe
 xenon.subscriptionUpsold(tierGold, method);
+// ...
+// Successful subscription upsell of the middle tier with term and price
+xenon.subscriptionUpsold(tierGold, term, price, method);
 // ...
 // Successful upsell of the top tier
 xenon.subscriptionUpsold(tierPlatium);
@@ -639,6 +665,8 @@ final Xenon xenon = new Xenon();
 
 final String tierGold = "Gold Monthly";
 final String tierPlatium = "Platium";
+final String term = "Monthly";
+final String price = "$1.99";
 final String annualGold = "Gold Annual";
 final String method = "Stripe"; //optional
 
@@ -649,6 +677,9 @@ xenon.subscriptionUpsellDeclined(tierGold);
 // ...
 // Rejected upsell of the top tier
 xenon.subscriptionUpsellDeclined(tierPlatium);
+// ...
+// Rejected subscription upsell of the middle tier with term and price
+xenon.subscriptionUpsellDeclined(tierGold, term, price, method);
 // ...
 // Rejected upsell of middle tier - annual period with Stripe
 xenon.subscriptionUpsellDeclined(annualGold, method);

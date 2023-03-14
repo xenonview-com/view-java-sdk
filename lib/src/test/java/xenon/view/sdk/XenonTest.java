@@ -9,7 +9,6 @@ package xenon.view.sdk;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,14 +18,14 @@ import xenon.view.sdk.api.Api;
 import xenon.view.sdk.api.fetch.Fetchable;
 import xenon.view.sdk.api.fetch.Json;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -106,7 +105,9 @@ public class XenonTest {
             final String deviceModel = "Pixel 4 XL";
             final String operatingSystemName = "Android";
             final String operatingSystemVersion = "12.0";
-            final JSONArray tags = new JSONArray(){{put("aTag");}};
+            final JSONArray tags = new JSONArray() {{
+                put("aTag");
+            }};
             AtomicReference<Xenon> unit = new AtomicReference<>(null);
             AtomicReference<String> journeyStr = new AtomicReference<>("");
             BeforeEach(() -> {
@@ -126,7 +127,7 @@ public class XenonTest {
             It("then has default id", () -> {
                 assertNotEquals("", unit.get().id());
             });
-            It("swallows exception when adding non-existent journey step", ()-> {
+            It("swallows exception when adding non-existent journey step", () -> {
                 JSONArray in = new JSONArray();
                 JSONArray out = new JSONArray();
                 unit.get().addJourneyIndexTo(out, in, 1);
@@ -333,7 +334,7 @@ public class XenonTest {
                 });
             });
             Describe("when initialSubscription", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().initialSubscription("Silver Monthly");
                     });
@@ -343,7 +344,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().initialSubscription("Silver Monthly", "Stripe");
                     });
@@ -353,7 +354,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method and term/price", ()->{
+                Describe("when method and term/price", () -> {
                     BeforeEach(() -> {
                         unit.get().initialSubscription("Silver", "Monthly", "$1.99", "Stripe");
                     });
@@ -365,7 +366,7 @@ public class XenonTest {
                 });
             });
             Describe("when subscriptionDeclined", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionDeclined("Silver Monthly");
                     });
@@ -375,7 +376,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionDeclined("Silver Monthly", "Stripe");
                     });
@@ -385,9 +386,19 @@ public class XenonTest {
                         ));
                     });
                 });
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionDeclined("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Initial Subscription\",\"term\":\"Monthly\",\"outcome\":\"Decline - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when subscriptionRenewed", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionRenewed("Silver Monthly");
                     });
@@ -397,7 +408,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionRenewed("Silver Monthly", "Stripe");
                     });
@@ -407,9 +418,19 @@ public class XenonTest {
                         ));
                     });
                 });
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionRenewed("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Renewal\",\"term\":\"Monthly\",\"outcome\":\"Renew - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when subscriptionCanceled", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionCanceled("Silver Monthly");
                     });
@@ -419,7 +440,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionCanceled("Silver Monthly", "Stripe");
                     });
@@ -429,9 +450,20 @@ public class XenonTest {
                         ));
                     });
                 });
+
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionCanceled("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Renewal\",\"term\":\"Monthly\",\"outcome\":\"Cancel - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when subscriptionUpsold", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionUpsold("Silver Monthly");
                     });
@@ -441,7 +473,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionUpsold("Silver Monthly", "Stripe");
                     });
@@ -451,9 +483,20 @@ public class XenonTest {
                         ));
                     });
                 });
+
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionUpsold("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Upsold\",\"term\":\"Monthly\",\"outcome\":\"Upsold - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when subscriptionUpsellDeclined", () -> {
-                Describe("when no method", ()->{
+                Describe("when no method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionUpsellDeclined("Silver Monthly");
                     });
@@ -463,7 +506,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when method", ()->{
+                Describe("when method", () -> {
                     BeforeEach(() -> {
                         unit.get().subscriptionUpsellDeclined("Silver Monthly", "Stripe");
                     });
@@ -473,9 +516,19 @@ public class XenonTest {
                         ));
                     });
                 });
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionUpsellDeclined("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Upsold\",\"term\":\"Monthly\",\"outcome\":\"Declined - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when referral", () -> {
-                Describe("when no detail", ()->{
+                Describe("when no detail", () -> {
                     BeforeEach(() -> {
                         unit.get().referral("Share");
                     });
@@ -485,7 +538,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when detail", ()->{
+                Describe("when detail", () -> {
                     BeforeEach(() -> {
                         unit.get().referral("Share", "Review");
                     });
@@ -497,7 +550,7 @@ public class XenonTest {
                 });
             });
             Describe("when referralDeclined", () -> {
-                Describe("when no detail", ()->{
+                Describe("when no detail", () -> {
                     BeforeEach(() -> {
                         unit.get().referralDeclined("Share");
                     });
@@ -507,7 +560,7 @@ public class XenonTest {
                         ));
                     });
                 });
-                Describe("when detail", ()->{
+                Describe("when detail", () -> {
                     BeforeEach(() -> {
                         unit.get().referralDeclined("Share", "Review");
                     });
@@ -995,7 +1048,7 @@ public class XenonTest {
                 final String contentId = "duplicateId";
                 BeforeEach(() -> {
                     unit.get().contentEdited(contentName, contentId);
-                    unit.get().contentEdited(contentName, contentId+"1");
+                    unit.get().contentEdited(contentName, contentId + "1");
                 });
                 It("has one journey", () -> {
                     assertThat(unit.get().journey().length(), equalTo(2));
@@ -1020,7 +1073,7 @@ public class XenonTest {
                 final String milestoneDetail = "User Lookup";
                 BeforeEach(() -> {
                     unit.get().milestone(milestoneCategory, milestoneOperation, milestoneName, milestoneDetail);
-                    unit.get().milestone(milestoneCategory, milestoneOperation, milestoneName, milestoneDetail+"2");
+                    unit.get().milestone(milestoneCategory, milestoneOperation, milestoneName, milestoneDetail + "2");
                 });
                 It("has one journey", () -> {
                     assertThat(unit.get().journey().length(), equalTo(2));
@@ -1073,24 +1126,36 @@ public class XenonTest {
                 Describe("when same keys no category", () -> {
                     It("then is not dup", () -> {
                         assertThat(unit.get().isDuplicate(
-                                new JSONObject(){{put("test", "1");}},
-                                new JSONObject(){{put("test", "2");}}
+                                new JSONObject() {{
+                                    put("test", "1");
+                                }},
+                                new JSONObject() {{
+                                    put("test", "2");
+                                }}
                         ), equalTo(false));
                     });
                 });
                 Describe("when categories are not equal", () -> {
                     It("then is not dup", () -> {
                         assertThat(unit.get().isDuplicate(
-                                new JSONObject(){{put("category", "1");}},
-                                new JSONObject(){{put("category", "2");}}
+                                new JSONObject() {{
+                                    put("category", "1");
+                                }},
+                                new JSONObject() {{
+                                    put("category", "2");
+                                }}
                         ), equalTo(false));
                     });
                 });
                 Describe("when category without action", () -> {
                     It("then is not dup", () -> {
                         assertThat(unit.get().isDuplicate(
-                                new JSONObject(){{put("category", "1");}},
-                                new JSONObject(){{put("category", "1");}}
+                                new JSONObject() {{
+                                    put("category", "1");
+                                }},
+                                new JSONObject() {{
+                                    put("category", "1");
+                                }}
                         ), equalTo(false));
                     });
                 });
@@ -1099,18 +1164,22 @@ public class XenonTest {
                 Describe("when content with no type", () -> {
                     It("then is not dup", () -> {
                         final Set<String> noTypeKey = new HashSet<String>();
-                        final JSONObject noType = new JSONObject(){{put("category", "Content");}};
+                        final JSONObject noType = new JSONObject() {{
+                            put("category", "Content");
+                        }};
                         assertThat(unit.get().duplicateContent(noType, noType, noTypeKey, noTypeKey), equalTo(true));
                     });
                 });
                 Describe("when content with mismatch type", () -> {
                     It("then is not dup", () -> {
-                        final Set<String> typeKey = new HashSet<String>(){{add("type");}};
-                        final JSONObject type1 = new JSONObject(){{
+                        final Set<String> typeKey = new HashSet<String>() {{
+                            add("type");
+                        }};
+                        final JSONObject type1 = new JSONObject() {{
                             put("category", "Content");
                             put("type", "1");
                         }};
-                        final JSONObject type2 = new JSONObject(){{
+                        final JSONObject type2 = new JSONObject() {{
                             put("category", "Content");
                             put("type", "2");
                         }};
@@ -1121,25 +1190,29 @@ public class XenonTest {
             Describe("duplicateMilestone", () -> {
                 Describe("when feature", () -> {
                     It("then is not dup", () -> {
-                        final JSONObject onlyFeature = new JSONObject(){{put("category", "Feature");}};
+                        final JSONObject onlyFeature = new JSONObject() {{
+                            put("category", "Feature");
+                        }};
                         final Set<String> noTypeKey = new HashSet<String>();
                         assertThat(unit.get().duplicateMilestone(onlyFeature, onlyFeature, noTypeKey, noTypeKey), equalTo(false));
                     });
                 });
                 Describe("when content", () -> {
                     It("then is not dup", () -> {
-                        final JSONObject onlyContent = new JSONObject(){{put("category", "Content");}};
+                        final JSONObject onlyContent = new JSONObject() {{
+                            put("category", "Content");
+                        }};
                         final Set<String> noTypeKey = new HashSet<String>();
                         assertThat(unit.get().duplicateMilestone(onlyContent, onlyContent, noTypeKey, noTypeKey), equalTo(false));
                     });
                 });
                 Describe("when name mismatch", () -> {
                     It("then is not dup", () -> {
-                        final JSONObject categoryAndName = new JSONObject(){{
+                        final JSONObject categoryAndName = new JSONObject() {{
                             put("category", "1");
                             put("name", "1");
                         }};
-                        final JSONObject categoryAndName2 = new JSONObject(){{
+                        final JSONObject categoryAndName2 = new JSONObject() {{
                             put("category", "1");
                             put("name", "2");
                         }};

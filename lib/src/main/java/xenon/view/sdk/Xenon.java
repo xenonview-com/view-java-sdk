@@ -230,6 +230,17 @@ public class Xenon {
         outcomeAdd(content);
     }
 
+    public void subscriptionDeclined(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Initial Subscription");
+        content.put("outcome", "Decline - " + tier);
+        content.put("result", "fail");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
+        outcomeAdd(content);
+    }
+
     public void subscriptionRenewed(String tier) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("superOutcome", "Subscription Renewal");
@@ -244,6 +255,17 @@ public class Xenon {
         content.put("outcome", "Renew - " + tier);
         content.put("result", "success");
         content.put("method", method);
+        outcomeAdd(content);
+    }
+
+    public void subscriptionRenewed(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Subscription Renewal");
+        content.put("outcome", "Renew - " + tier);
+        content.put("result", "success");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
         outcomeAdd(content);
     }
 
@@ -264,6 +286,17 @@ public class Xenon {
         outcomeAdd(content);
     }
 
+    public void subscriptionCanceled(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Subscription Renewal");
+        content.put("outcome", "Cancel - " + tier);
+        content.put("result", "fail");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
+        outcomeAdd(content);
+    }
+
     public void subscriptionUpsold(String tier) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("superOutcome", "Subscription Upsold");
@@ -281,6 +314,17 @@ public class Xenon {
         outcomeAdd(content);
     }
 
+    public void subscriptionUpsold(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Subscription Upsold");
+        content.put("outcome", "Upsold - " + tier);
+        content.put("result", "success");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
+        outcomeAdd(content);
+    }
+
     public void subscriptionUpsellDeclined(String tier) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("superOutcome", "Subscription Upsold");
@@ -295,6 +339,17 @@ public class Xenon {
         content.put("outcome", "Declined - " + tier);
         content.put("result", "fail");
         content.put("method", method);
+        outcomeAdd(content);
+    }
+
+    public void subscriptionUpsellDeclined(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Subscription Upsold");
+        content.put("outcome", "Declined - " + tier);
+        content.put("result", "fail");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
         outcomeAdd(content);
     }
 
