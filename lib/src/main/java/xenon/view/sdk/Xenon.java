@@ -202,6 +202,17 @@ public class Xenon {
         outcomeAdd(content);
     }
 
+    public void initialSubscription(String tier, String term, String price, String method) throws JSONException {
+        JSONObject content = new JSONObject();
+        content.put("superOutcome", "Initial Subscription");
+        content.put("outcome", "Subscribe - " + tier);
+        content.put("result", "success");
+        content.put("method", method);
+        content.put("term", term);
+        content.put("price", price);
+        outcomeAdd(content);
+    }
+
     public void subscriptionDeclined(String tier) throws JSONException {
         JSONObject content = new JSONObject();
         content.put("superOutcome", "Initial Subscription");

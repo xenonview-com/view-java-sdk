@@ -353,6 +353,16 @@ public class XenonTest {
                         ));
                     });
                 });
+                Describe("when method and term/price", ()->{
+                    BeforeEach(() -> {
+                        unit.get().initialSubscription("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Initial Subscription\",\"term\":\"Monthly\",\"outcome\":\"Subscribe - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
             });
             Describe("when subscriptionDeclined", () -> {
                 Describe("when no method", ()->{
@@ -1262,14 +1272,14 @@ public class XenonTest {
                         assertEquals("[]", journeyStr.get());
                     });
                 });
-                Describe("when tags", () -> {
+                Describe("when variants", () -> {
                     Describe("when JSONArray", () -> {
                         BeforeEach(() -> {
                             when(HeartbeatApi.instance(apiUrl)).thenReturn(HeartbeatFetcher);
                             heartbeatFuture.complete(new Json(""));
                             when(HeartbeatFetcher.fetch(ArgumentMatchers.any())).thenReturn(heartbeatFuture);
                             unit.get().variant(new JSONArray() {{
-                                put("aTag");
+                                put("variant");
                             }});
                             unit.get().heartbeat();
                         });
@@ -1280,7 +1290,7 @@ public class XenonTest {
                                     assertThat(params.get("journey").toString(),
                                             containsString("[{\"name\":\"heartbeating\",\"action\":\"Attempted\",\"category\":\"Feature\",\"timestamp\":"));
                                     assertEquals(apiKey, params.get("token"));
-                                    assertEquals("aTag", params.getJSONArray("tags").get(0));
+                                    assertEquals("variant", params.getJSONArray("tags").get(0));
                                     assertThat(params.get("timestamp"), instanceOf(Double.class));
                                 } catch (JSONException err) {
                                     return false;
