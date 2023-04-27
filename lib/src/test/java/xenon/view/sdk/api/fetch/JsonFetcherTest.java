@@ -27,6 +27,7 @@ import java.security.cert.Certificate;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
@@ -58,7 +59,7 @@ public class JsonFetcherTest {
                 AtomicReference<CompletableFuture<Json>> completableFuture = new AtomicReference<>();
                 BeforeEach(() -> {
                     data.get().put("method", "GET");
-                    unit.set(new JsonFetcher(client));
+                    unit.set(new JsonFetcher(()->{return client;}));
                     when(client.newCall(any())).thenAnswer(invocation -> {
                         request.set((Request) invocation.getArguments()[0]);
                         return enqueuer;
@@ -112,9 +113,15 @@ public class JsonFetcherTest {
                     });
                 });
                 Describe("when the request is not successful", () -> {
+                    Dispatcher theDispatcher = mock(Dispatcher.class);
+                    ExecutorService theService = mock(ExecutorService.class);
+                    ConnectionPool thePool = mock(ConnectionPool.class);
                     BeforeEach(() -> {
                         Call theCall = mock(Call.class);
                         when(theCall.request()).thenReturn(request.get());
+                        when(client.dispatcher()).thenReturn(theDispatcher);
+                        when(theDispatcher.executorService()).thenReturn(theService);
+                        when(client.connectionPool()).thenReturn(thePool);
                         callback.get().onFailure(theCall, new IOException("{\"response\":\"failed\"}"));
                     });
 
@@ -123,6 +130,10 @@ public class JsonFetcherTest {
                             assertEquals("{\"response\":\"failed\"}", err.getMessage());
                             return new Json(err.getMessage());
                         });
+                    });
+                    It("closes connection pool", () -> {
+                        verify(theService).shutdown();
+                        verify(thePool).evictAll();
                     });
                 });
                 Describe("when the request unauthorized", () -> {
@@ -158,9 +169,15 @@ public class JsonFetcherTest {
                     });
                 });
                 Describe("when the request errors", () -> {
+                    Dispatcher theDispatcher = mock(Dispatcher.class);
+                    ExecutorService theService = mock(ExecutorService.class);
+                    ConnectionPool thePool = mock(ConnectionPool.class);
                     BeforeEach(() -> {
                         Call theCall = mock(Call.class);
                         when(theCall.request()).thenReturn(request.get());
+                        when(client.dispatcher()).thenReturn(theDispatcher);
+                        when(theDispatcher.executorService()).thenReturn(theService);
+                        when(client.connectionPool()).thenReturn(thePool);
                         callback.get().onFailure(theCall, new IOException("No Internet Connection"));
                     });
                     It("rejects the promise", () -> {
@@ -168,6 +185,10 @@ public class JsonFetcherTest {
                             assertEquals("No Internet Connection", err.getMessage());
                             return new Json(err.getMessage());
                         });
+                    });
+                    It("closes connection pool", () -> {
+                        verify(theService).shutdown();
+                        verify(thePool).evictAll();
                     });
                 });
                 Describe("when the request generally errors", () -> {
@@ -233,7 +254,7 @@ public class JsonFetcherTest {
                     data.get().put("body", new JSONObject() {{
                         put("test", "body");
                     }});
-                    unit.set(new JsonFetcher(client));
+                    unit.set(new JsonFetcher(()->{return client;}));
                     when(client.newCall(any())).thenAnswer(invocation -> {
                         request.set((Request) invocation.getArguments()[0]);
                         return enqueuer;
@@ -269,7 +290,7 @@ public class JsonFetcherTest {
                     JSONObject headers = new JSONObject();
                     headers.put("authorization", "Bearer <token>");
                     data.get().put("requestHeaders", headers);
-                    unit.set(new JsonFetcher(client));
+                    unit.set(new JsonFetcher(()->{return client;}));
                     when(client.newCall(any())).thenAnswer(invocation -> {
                         request.set((Request) invocation.getArguments()[0]);
                         return enqueuer;
@@ -304,7 +325,7 @@ public class JsonFetcherTest {
                     headers.put("authorization", "Bearer <token>");
                     data.get().put("requestHeaders", headers);
                     data.get().put("ignore-certificate-errors", true);
-                    unit.set(new JsonFetcher(builder, client));
+                    unit.set(new JsonFetcher(builder, ()->{return client;}));
                     when(builder.sslSocketFactory(any(), any())).thenReturn(builder);
                     when(builder.hostnameVerifier(any())).thenReturn(builder);
                     when(builder.build()).thenReturn(client);

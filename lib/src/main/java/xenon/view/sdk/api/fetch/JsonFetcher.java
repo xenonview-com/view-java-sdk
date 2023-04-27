@@ -24,16 +24,25 @@ import java.util.concurrent.CompletableFuture;
 public class JsonFetcher implements Fetchable {
     private OkHttpClient client;
     private OkHttpClient.Builder builder = new OkHttpClient.Builder();
+    public interface NewHttpClientPointer {
+        OkHttpClient newClient();
+    }
+    private static OkHttpClient newClient(){
+        return new OkHttpClient();
+    }
+    private NewHttpClientPointer httpClientMaker = JsonFetcher::newClient;
+
 
     public JsonFetcher(){
-        client = new OkHttpClient();
+        client = JsonFetcher.newClient();
     }
 
-    public JsonFetcher(OkHttpClient _client){
-        client = _client;
+    public JsonFetcher(NewHttpClientPointer _clientMaker){
+        httpClientMaker = _clientMaker;
+        client = httpClientMaker.newClient();
     }
-    public JsonFetcher(OkHttpClient.Builder _builder, OkHttpClient _client){
-        this(_client);
+    public JsonFetcher(OkHttpClient.Builder _builder, NewHttpClientPointer _clientMaker){
+        this(_clientMaker);
         builder = _builder;
     }
 
@@ -79,6 +88,9 @@ public class JsonFetcher implements Fetchable {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 //HTTP request exception
+                client.dispatcher().executorService().shutdown();
+                client.connectionPool().evictAll();
+                client = httpClientMaker.newClient();
                 completableFuture.completeExceptionally(e);
             }
 

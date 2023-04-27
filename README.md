@@ -38,6 +38,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 <br/>
 
 ## What"s New <a id="whats-new"></a>
+* v0.1.8 - On socket timeout, close all cached connections and start new see #185024471.
 * v0.1.7 - Add options for term/price for all subscription related calls.
 * v0.1.6 - Add initial subscriptions options for term/price.
 * v0.1.5 - Fix typo
