@@ -1,9 +1,9 @@
 # xenon-view-sdk
 The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xenonview.com).
 
-**Table of contents:** <a id="contents"></a>
+**Table of contents:** <a id='contents'></a>
 
-* [What"s New](#whats-new)
+* [What's New](#whats-new)
 * [Introduction](#intro)
 * [Steps To Get Started](#getting-started)
     * [Identify Business Outcomes](#step-1)
@@ -37,7 +37,8 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 
 <br/>
 
-## What"s New <a id="whats-new"></a>
+## What's New <a id='whats-new'></a>
+* v0.1.9 - Added: Downsell, Ad, Content Archive, Subscription Pause and included price/term for all subscriptions
 * v0.1.8 - On socket timeout, close all cached connections and start new see #185024471.
 * v0.1.7 - Add options for term/price for all subscription related calls.
 * v0.1.6 - Add initial subscriptions options for term/price.
@@ -51,7 +52,7 @@ The Xenon View Java SDK is the Java SDK to interact with [XenonView](https://xen
 <br/>
 
 
-## Introduction <a id="intro"></a>
+## Introduction <a id='intro'></a>
 Everyone should have access to world-class customer telemetry.
 
 You should be able to identify the most pressing problems affecting your business quickly.
@@ -67,8 +68,8 @@ With the correct approach to instrumentation coupled with AI-enhanced analytics,
 
 [back to top](#contents)
 
-## Get Started With The Following Steps: <a id="getting-started"></a>
-The Xenon View SDK can be used in your application to provide a new level of customer telemetry. You"ll need to embed the instrumentation into your website/application via this SDK.
+## Get Started With The Following Steps: <a id='getting-started'></a>
+The Xenon View SDK can be used in your application to provide a new level of customer telemetry. You'll need to embed the instrumentation into your website/application via this SDK.
 
 Instrumentation will vary based on your use case; are you offering a service/subscription (SaaS) or selling products (Ecom)?
 
@@ -80,7 +81,7 @@ In a nutshell, the steps to get started are as follows:
 <br/>
 
 
-### Step 1 - Business Outcomes <a id="step-1"></a>
+### Step 1 - Business Outcomes <a id='step-1'></a>
 
 Regardless of your business model, your first step will be identifying your desired business outcomes.
 
@@ -103,7 +104,7 @@ Regardless of your business model, your first step will be identifying your desi
 <br/>
 
 
-### Step 2 - Customer Journey Milestones <a id="step-2"></a>
+### Step 2 - Customer Journey Milestones <a id='step-2'></a>
 
 For each Business Outcome, identify potential customer journey milestones leading up to that business outcome.
 
@@ -121,7 +122,7 @@ For each Business Outcome, identify potential customer journey milestones leadin
 
 <br/>
 
-### Step 3 - Enumerate Technical Stack <a id="step-3"></a>
+### Step 3 - Enumerate Technical Stack <a id='step-3'></a>
 
 Next, you will want to figure out which SDK to use. We have some of the most popular languages covered.
 
@@ -133,6 +134,7 @@ Start by listing the technologies involved and what languages your company uses.
 
 Next, figure out how your outcomes spread across those technologies. Below are pointers to our currently supported languages:
 * [React](https://github.com/xenonview-com/view-js-sdk)
+* [Next.Js](https://github.com/xenonview-com/view-js-sdk)
 * [Angular](https://github.com/xenonview-com/view-js-sdk)
 * [HTML](https://github.com/xenonview-com/view-js-sdk)
 * [Plain JavaScript](https://github.com/xenonview-com/view-js-sdk)
@@ -145,17 +147,17 @@ Next, figure out how your outcomes spread across those technologies. Below are p
 Finally, continue the steps below for each technology and outcome.
 
 
-### Step 4 - Installation <a id="step-4"></a>
+### Step 4 - Installation <a id='step-4'></a>
 
 After you have done the prework of [Step 1](#step-1) and [Step 2](#step-2), you are ready to [install Xenon View](#installation).
-Once installed, you"ll need to [initialize the SDK](#instantiation) and get started instrumenting.
+Once installed, you'll need to [initialize the SDK](#instantiation) and get started instrumenting.
 
 
 <br/>
 <br/>
 
 
-### Step 5 - Instrument Business Outcomes <a id="step-5"></a>
+### Step 5 - Instrument Business Outcomes <a id='step-5'></a>
 
 We have provided several SDK calls to shortcut your instrumentation and map to the outcomes identified in [Step 1](#step-1).  
 These calls will roll up into the associated Categories during analysis. These rollups allow you to view each Category in totality.
@@ -163,34 +165,35 @@ As you view the categories, you can quickly identify issues (for example, if the
 
 **[Service/Subscription/SaaS Related Outcome Calls](#saas)**  (click on a call to see usage)
 
-| Category | Success | Failure | 
+| Category | Success | Decline |
 | --- | --- | --- |
-| Lead Capture | [`leadCaptured()`](#saas-lead-capture) | [`leadCaptureDeclined()`](#saas-lead-capture-fail) | 
-| Account Signup | [`accountSignup()`](#saas-account-signup) | [`accountSignupDeclined()`](#saas-account-signup-fail) | 
-| Application Installation | [`applicationInstalled()`](#saas-application-install) |  [`applicationNotInstalled()`](#saas-application-install-fail) | 
+| Lead Capture | [`leadCaptured()`](#saas-lead-capture) | [`leadCaptureDeclined()`](#saas-lead-capture-fail) |
+| Account Signup | [`accountSignup()`](#saas-account-signup) | [`accountSignupDeclined()`](#saas-account-signup-fail) |
+| Application Installation | [`applicationInstalled()`](#saas-application-install) | [`applicationNotInstalled()`](#saas-application-install-fail)|
 | Initial Subscription | [`initialSubscription()`](#saas-initial-subscription) | [`subscriptionDeclined()`](#saas-initial-subscription-fail) |
-| Subscription Renewed | [`subscriptionRenewed()`](#saas-renewed-subscription) | [`subscriptionCanceled()`](#saas-renewed-subscription-fail) | 
-| Subscription Upsell | [`subscriptionUpsold()`](#saas-upsell-subscription) | [`subscriptionUpsellDeclined()`](#saas-upsell-subscription-fail) | 
-| Referral | [`referral()`](#saas-referral) | [`referralDeclined()`](#saas-referral-fail) | 
+| Subscription Renewed | [`subscriptionRenewed()`](#saas-renewed-subscription) | [`subscriptionCanceled()`](#saas-renewed-subscription-fail) / [`subscriptionPaused()`](#saas-paused-subscription) |
+| Subscription Upsell | [`subscriptionUpsold()`](#saas-upsell-subscription) | [`subscriptionUpsellDeclined()`](#saas-upsell-subscription-fail) / [`subscriptionDownsell()`](#saas-downsell-subscription) |
+| Ad Clicked | [`adClicked()`](#saas-ad-clicked) | [`adIgnored()`](#saas-ad-ignored) |
+| Referral | [`referral()`](#saas-referral) | [`referralDeclined()`](#saas-referral-fail) |
 
 
 **[Ecom Related Outcome Calls](#ecom)** (click on a call to see usage)
 
-| Category | Success | Failure |
-| --- | --- | --- | 
-| Lead Capture | [`leadCaptured()`](#ecom-lead-capture) | [`leadCaptureDeclined()`](#ecom-lead-capture-fail) | 
-| Account Signup | [`accountSignup()`](#ecom-account-signup) | [`accountSignupDeclined()`](#ecom-account-signup-fail) | 
+| Category | Success | Decline |
+| --- | --- | --- |
+| Lead Capture | [`leadCaptured()`](#ecom-lead-capture) | [`leadCaptureDeclined()`](#ecom-lead-capture-fail) |
+| Account Signup | [`accountSignup()`](#ecom-account-signup) | [`accountSignupDeclined()`](#ecom-account-signup-fail) |
 | Add To Cart | [`productAddedToCart()`](#ecom-product-to-cart) | [`productNotAddedToCart()`](#ecom-product-to-cart-fail) |
-| Product Upsell | [`upsold()`](#ecom-upsell) | [`upsellDismissed()`](#ecom-upsell-fail) | 
-| Checkout | [`checkedOut()`](#ecom-checkout) | [`checkoutCanceled()`](#ecom-checkout-fail)/[`productRemoved()`](#ecom-checkout-remove) | 
-| Purchase | [`purchased()`](#ecom-purchase) | [`purchaseCanceled()`](#ecom-purchase-fail) | 
-| Promise Fulfillment | [`promiseFulfilled()`](#ecom-promise-fulfillment) | [`promiseUnfulfilled()`](#ecom-promise-fulfillment-fail) | 
+| Product Upsell | [`upsold()`](#ecom-upsell) | [`upsellDismissed()`](#ecom-upsell-fail) |
+| Checkout | [`checkedOut()`](#ecom-checkout) | [`checkoutCanceled()`](#ecom-checkout-fail) / [`productRemoved()`](#ecom-checkout-remove) |
+| Purchase | [`purchased()`](#ecom-purchase) | [`purchaseCanceled()`](#ecom-purchase-fail) |
+| Promise Fulfillment | [`promiseFulfilled()`](#ecom-promise-fulfillment) | [`promiseUnfulfilled()`](#ecom-promise-fulfillment-fail) |
 | Product Disposition | [`productKept()`](#ecom-product-outcome) | [`productReturned()`](#ecom-product-outcome-fail) |
 | Referral | [`referral()`](#ecom-referral) | [`referralDeclined()`](#ecom-referral-fail) |
 
 <br/>
 
-### Step 6 - Instrument Customer Journey Milestones <a id="step-6"></a>
+### Step 6 - Instrument Customer Journey Milestones <a id='step-6'></a>
 
 Next, you will want to instrument your website/application/backend/service for the identified Customer Journey Milestones [Step 2](#step-2).
 We have provided several SDK calls to shortcut your instrumentation here as well.
@@ -206,23 +209,21 @@ Milestones break down into two types (click on a call to see usage):
 | Features | Content |
 | --- | --- |
 | [`featureAttempted()`](#feature-started) | [`contentViewed()`](#content-viewed) |
-| [`featureFailed()`](#feature-failed) | [`contentEdited()`](#content-edited) |
-| [`featureCompleted()`](#feature-complete) | [`contentCreated()`](#content-created) |
-| | [`contentDeleted()`](#content-deleted) |
-| | [`contentRequested()`](#content-requested)|
-| | [`contentSearched()`](#content-searched)|
+| [`featureFailed()`](#feature-failed) | [`contentCreated()`](#content-created) / [`contentEdited()`](#content-edited) |
+| [`featureCompleted()`](#feature-complete) |  [`contentDeleted()`](#content-deleted) / [`contentArchived()`](#content-archived) |
+| | [`contentRequested()`](#content-requested)/[`contentSearched()`](#content-searched)|
 
 <br/>
 
-### Step 7 - Commit Points <a id="step-7"></a>
+### Step 7 - Commit Points <a id='step-7'></a>
 
 
-Once instrumented, you"ll want to select appropriate [commit points](#commit). Committing will initiate the analysis on your behalf by Xenon View.
+Once instrumented, you'll want to select appropriate [commit points](#commit). Committing will initiate the analysis on your behalf by Xenon View.
 
 <br/>
 <br/>
 
-### Step 8 (Optional) - Group Customer Journeys <a id="step-8"></a>
+### Step 8 (Optional) - Group Customer Journeys <a id='step-8'></a>
 
 All the customer journeys (milestones and outcomes) are anonymous by default.
 For example, if a Customer interacts with your brand in the following way:
@@ -239,14 +240,14 @@ Deanonymizing is optional. Basic matching of the customer journey with outcomes 
 
 <br/>
 
-### Step 9 - Analysis <a id="step-9"></a>
+### Step 9 - Analysis <a id='step-9'></a>
 
 
 Once you have released your instrumented code, you can head to [XenonView](https://xenonview.com/) to view the analytics.
 
 <br/>
 
-### Step 10 - Perform Experiments <a id="step-10"></a>
+### Step 10 - Perform Experiments <a id='step-10'></a>
 
 There are multiple ways you can experiment using XenonView. We"ll focus here on three of the most common: time, platform, and variant based cohorts.
 
@@ -267,7 +268,7 @@ You can [Platform](#platforming) any journey collection before collecting data. 
 * Device model (Pixel, iPhone 14, Docker Container, Linux VM, Dell Server, etc.)
 * A software version of your application.
 
-As an example, let"s say you have an iPhone and Android mobile application and you want to see if an outcome is more successful on one device verse the other.
+As an example, let's say you have an iPhone and Android mobile application and you want to see if an outcome is more successful on one device verse the other.
 You can platform before the section of code that performs that flow. After collecting the data, you can filter in the XenonView UI based on each platform to
 observe the results.
 
@@ -277,20 +278,20 @@ observe the results.
 
 [back to top](#contents)
 
-## Detailed Usage <a id="detailed-usage"></a>
+## Detailed Usage <a id='detailed-usage'></a>
 The following section gives detailed usage instructions and descriptions.
 It provides code examples for each of the calls.
 
 <br/>
 
-### Installation <a id="installation"></a>
+### Installation <a id='installation'></a>
 
 <br/>
 
 
 You can install the Xenon View SDK from [maven central](https://search.maven.org/artifact/io.github.xenonview-com/xenon-view-sdk/0.1.7/jar):
 
-#### <a name="maven"></a>
+#### <a name='maven'></a>
 Via maven:
 ```xml
 <dependency>
@@ -300,19 +301,19 @@ Via maven:
 </dependency>
 ```
 
-#### <a name="gradle-groovy"></a>
+#### <a name='gradle-groovy'></a>
 Via gradle (groovy):
 ```groovy
-implementation "io.github.xenonview-com:xenon-view-sdk:0.1.7"
+implementation "io.github.xenonview-com:xenon-view-sdk:0.1.8"
 ```
 
-#### <a name="gradle-kotlin"></a>
+#### <a name='gradle-kotlin'></a>
 Via gradle (kolin):
 ```kotlin
-implementation("io.github.xenonview-com:xenon-view-sdk:0.1.7")
+implementation("io.github.xenonview-com:xenon-view-sdk:0.1.8")
 ```
 
-#### <a name="download-jar"></a>
+#### <a name='download-jar'></a>
 Via jar download (maven central):
 
 Download required Jars and import as libraries into your project:  
@@ -323,9 +324,9 @@ Download required Jars and import as libraries into your project:
 
 [back to top](#contents)
 
-### Instantiation <a id="instantiation"></a>
+### Instantiation <a id='instantiation'></a>
 
-The View SDK is a Java module you"ll need to include in your application. After inclusion, you"ll need to init the singleton object:
+The View SDK is a Java module you'll need to include in your application. After inclusion, you'll need to init the singleton object:
 
 ```java
 import xenon.view.sdk.Xenon;
@@ -339,22 +340,23 @@ final Xenon xenon = new Xenon("<API KEY>");
 ```java
 import xenon.view.sdk.Xenon;
 
-// to initialize Xenon View after final Stringruction
+// to initialize Xenon View after construction
 final Xenon xenon = new Xenon();
 xenon.init("<API KEY>");
 ```
-Of course, you"ll have to make the following modifications to the above code:
+
+Of course, you'll have to make the following modifications to the above code:
 - Replace `<API KEY>` with your [api key](https://xenonview.com/api-get)
 
 <br/>
 
 [back to top](#contents)
 
-### Service/Subscription/SaaS Related Business Outcomes <a id="saas"></a>
+### Service/Subscription/SaaS Related Business Outcomes <a id='saas'></a>
 
 <br/>
 
-#### Lead Capture  <a id="saas-lead-capture"></a>
+#### Lead Capture  <a id='saas-lead-capture'></a>
 Use this call to track Lead Capture (emails, phone numbers, etc.)
 You can add a specifier string to the call to differentiate as follows:
 
@@ -378,7 +380,7 @@ xenon.leadCaptured(phoneSpecified);
 
 <br/>
 
-##### ```leadCaptureDeclined()``` <a id="saas-lead-capture-fail"></a>
+##### ```leadCaptureDeclined()``` <a id='saas-lead-capture-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -397,7 +399,7 @@ xenon.leadCaptureDeclined(phoneSpecified);
 
 <br/>
 
-#### Account Signup  <a id="saas-account-signup"></a>
+#### Account Signup  <a id='saas-account-signup'></a>
 Use this call to track when customers signup for an account.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -425,7 +427,7 @@ xenon.accountSignup(viaEmail);
 
 <br/>
 
-##### ```accountSignupDeclined()``` <a id="saas-account-signup-fail"></a>
+##### ```accountSignupDeclined()``` <a id='saas-account-signup-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -448,7 +450,7 @@ xenon.accountSignupDeclined(viaEmail);
 
 <br/>
 
-#### Application Installation  <a id="saas-application-install"></a>
+#### Application Installation  <a id='saas-application-install'></a>
 Use this call to track when customers install your application.
 
 <br/>
@@ -465,7 +467,7 @@ xenon.applicationInstalled();
 
 <br/>
 
-##### ```applicationNotInstalled()``` <a id="saas-application-install-fail"></a>
+##### ```applicationNotInstalled()``` <a id='saas-application-install-fail'></a>
 > :memo: Note: You want consistency between success and failure.
 ```java
 import xenon.view.sdk.Xenon;
@@ -478,7 +480,7 @@ xenon.applicationNotInstalled();
 
 <br/>
 
-#### Initial Subscription  <a id="saas-initial-subscription"></a>
+#### Initial Subscription  <a id='saas-initial-subscription'></a>
 Use this call to track when customers initially subscribe.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -490,13 +492,13 @@ import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierSilver = "Silver Monthly";
+final String tierSilver = "Silver 30d";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
-final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; // optional
+final String term = "30d"; // optional
+final String price = "$25"; //optional
 
 // Successful subscription of the lowest tier with Stripe
 xenon.initialSubscription(tierSilver, method);
@@ -516,20 +518,20 @@ xenon.initialSubscription(annualSilver);
 
 <br/>
 
-##### ```subscriptionDeclined()``` <a id="saas-initial-subscription-fail"></a>
+##### ```subscriptionDeclined()``` <a id='saas-initial-subscription-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierSilver = "Silver Monthly";
+final String tierSilver = "Silver 30d";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
-final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; // optional
+final String term = "30d"; // optional
+final String price = "$25"; //optional
 
 // Unsuccessful subscription of the lowest tier
 xenon.subscriptionDeclined(tierSilver);
@@ -545,11 +547,12 @@ xenon.subscriptionDeclined(tierPlatium);
 // ...
 // Unsuccessful subscription of an annual period
 xenon.subscriptionDeclined(annualSilver, method);
+
 ```
 
 <br/>
 
-#### Subscription Renewal  <a id="saas-renewed-subscription"></a>
+#### Subscription Renewal  <a id='saas-renewed-subscription'></a>
 Use this call to track when customers renew.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -561,13 +564,13 @@ import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierSilver = "Silver Monthly";
+final String tierSilver = "Silver 30d";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
-final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; //optional
+final String term = "30d"; //optional
+final String price = "$25"; //optional
 
 // Successful renewal of the lowest tier with Stripe
 xenon.subscriptionRenewed(tierSilver, method);
@@ -587,20 +590,20 @@ xenon.subscriptionRenewed(annualSilver);
 
 <br/>
 
-##### ```subscriptionCanceled()``` <a id="saas-renewed-subscription-fail"></a>
+##### ```subscriptionCanceled()``` <a id='saas-renewed-subscription-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierSilver = "Silver Monthly";
+final String tierSilver = "Silver 30d";
 final String tierGold = "Gold";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
-final String price = "$1.99";
 final String annualSilver = "Silver Annual";
 final String method = "Stripe"; //optional
+final String term = "30d"; //optional
+final String price = "$25"; //optional
 
 // Canceled subscription of the lowest tier
 xenon.subscriptionCanceled(tierSilver);
@@ -620,7 +623,40 @@ xenon.subscriptionCanceled(annualSilver, method);
 
 <br/>
 
-#### Subscription Upsold  <a id="saas-upsell-subscription"></a>
+##### ```subscriptionPaused()``` <a id='saas-paused-subscription'></a>
+> :memo: Note: You want to be consistent between success and failure and match the specifiers
+```java
+import xenon.view.sdk.Xenon;
+
+final Xenon xenon = new Xenon();
+
+final String tierSilver = "Silver 30d";
+final String tierGold = "Gold";
+final String tierPlatium = "Platium";
+final String annualSilver = "Silver Annual";
+final String method = "Stripe"; //optional
+final String term = "30d"; //optional
+final String price = "$25"; //optional
+
+// Paused subscription of the lowest tier
+xenon.subscriptionPaused(tierSilver);
+// ...
+// Paused subscription of the middle tier
+xenon.subscriptionPaused(tierGold);
+// ...
+// Paused subscription of the middle tier with term and price
+xenon.subscriptionPaused(tierGold, term, price, method);
+// ...
+// Paused subscription of the top tier
+xenon.subscriptionPaused(tierPlatium);
+// ...
+// Paused subscription of an annual period with Stripe
+xenon.subscriptionPaused(annualSilver, method);
+```
+
+<br/>
+
+#### Subscription Upsold  <a id='saas-upsell-subscription'></a>
 Use this call to track when a Customer upgrades their subscription.  
 You can add a specifier string to the call to differentiate as follows:
 
@@ -632,11 +668,11 @@ import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierGold = "Gold Monthly";
+final String tierGold = "Gold 30d";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
 final String price = "$1.99";
 final String annualGold = "Gold Annual";
+final String term = "30d"; //optional
 final String method = "Stripe"; // optional
 
 // Assume already subscribed to Silver
@@ -654,22 +690,22 @@ xenon.subscriptionUpsold(tierPlatium);
 xenon.subscriptionUpsold(annualGold);
 ```
 
-
 <br/>
 
-##### ```subscriptionUpsellDeclined()``` <a id="saas-upsell-subscription-fail"></a>
+##### ```subscriptionUpsellDeclined()``` <a id='saas-upsell-subscription-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
+
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
-final String tierGold = "Gold Monthly";
+final String tierGold = "Gold 30d";
 final String tierPlatium = "Platium";
-final String term = "Monthly";
-final String price = "$1.99";
 final String annualGold = "Gold Annual";
 final String method = "Stripe"; //optional
+final String term = "30d"; //optional
+final String price = "$1.99"; //optional
 
 // Assume already subscribed to Silver
 
@@ -688,7 +724,86 @@ xenon.subscriptionUpsellDeclined(annualGold, method);
 
 <br/>
 
-#### Referrals  <a id="saas-referral"></a>
+##### ```subscriptionDownsell()``` <a id='saas-downsell-subscription'></a>
+> :memo: Note: You want to be consistent between success and failure and match the specifiers
+```java
+import xenon.view.sdk.Xenon;
+
+final Xenon xenon = new Xenon();
+
+final String tierGold = "Gold 30d";
+final String tierPlatium = "Platium";
+final String annualGold = "Gold Annual";
+final String method = "Stripe"; //optional
+final String term = "30d"; //optional
+final String price = "$1.99"; //optional
+
+// Assume already subscribed to Platium
+
+// Downsell to Gold
+xenon.subscriptionDownsell(tierGold);
+// ...
+// Downsell to Gold annual with method
+xenon.subscriptionDownsell(annualGold, method);
+
+// Downsell to Gold - annual period with Stripe for $15
+xenon.subscriptionDownsell(tierGold, term, price, method);
+```
+
+<br/>
+
+#### Ad Clicked  <a id='saas-ad-clicked'></a>
+Use this call to track when customers click on an Advertisement.
+You can add a specifier string to the call to differentiate as follows:
+
+<br/>
+
+##### ```adClicked()```
+```java
+import xenon.view.sdk.Xenon;
+
+final Xenon xenon = new Xenon();
+
+final String provider = "AdMob";
+final String id = "ID-1234"; // optional
+final String price = "$0.25"; // optional
+
+// Click an Ad from AdMob
+xenon.adClicked(provider);
+// ...
+// Click an Ad from AdMob identfied by ID-1234
+xenon.adClicked(provider, id);
+// ...
+// Click an Ad from AdMob identfied by ID-1234 with price
+xenon.adClicked(provider, id, price);
+```
+
+<br/>
+
+##### ```adIgnored()```  <a id='saas-ad-ignored'></a>
+```java
+import xenon.view.sdk.Xenon;
+
+final Xenon xenon = new Xenon();
+
+final String provider = "AdMob";
+final String id = "ID-1234"; // optional
+final String price = "$0.25"; // optional
+
+// No action on an Ad from AdMob
+xenon.adIgnored(provider);
+// ...
+// No action on an Ad from AdMob identfied by ID-1234
+xenon.adIgnored(provider, id);
+// ...
+// No action on an Ad from AdMob identfied by ID-1234 with price
+xenon.adIgnored(provider, id, price);
+```
+
+<br/>
+
+
+#### Referral  <a id='saas-referral'></a>
 Use this call to track when customers refer someone to your offering.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -711,7 +826,7 @@ xenon.referral(kind);
 
 <br/>
 
-##### ```referralDeclined()``` <a id="saas-referral-fail"></a>
+##### ```referralDeclined()``` <a id='saas-referral-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -731,12 +846,12 @@ xenon.referralDeclined(kind);
 
 [back to top](#contents)
 
-### Ecommerce Related Outcomes <a id="ecom"></a>
+### Ecommerce Related Outcomes <a id='ecom'></a>
 
 
 <br/>
 
-#### Lead Capture  <a id="ecom-lead-capture"></a>
+#### Lead Capture  <a id='ecom-lead-capture'></a>
 Use this call to track Lead Capture (emails, phone numbers, etc.)
 You can add a specifier string to the call to differentiate as follows:
 
@@ -760,7 +875,7 @@ xenon.leadCaptured(phoneSpecified);
 
 <br/>
 
-##### ```leadCaptureDeclined()``` <a id="ecom-lead-capture-fail"></a>
+##### ```leadCaptureDeclined()``` <a id='ecom-lead-capture-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -779,7 +894,7 @@ xenon.leadCaptureDeclined(phoneSpecified);
 
 <br/>
 
-#### Account Signup  <a id="ecom-account-signup"></a>
+#### Account Signup  <a id='ecom-account-signup'></a>
 Use this call to track when customers signup for an account.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -807,7 +922,7 @@ xenon.accountSignup(viaEmail);
 
 <br/>
 
-##### ```accountSignupDeclined()``` <a id="ecom-account-signup-fail"></a>
+##### ```accountSignupDeclined()``` <a id='ecom-account-signup-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -830,7 +945,7 @@ xenon.accountSignupDeclined(viaEmail);
 
 <br/>
 
-#### Add Product To Cart  <a id="ecom-product-to-cart"></a>
+#### Add Product To Cart  <a id='ecom-product-to-cart'></a>
 Use this call to track when customers add a product to the cart.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -854,7 +969,7 @@ xenon.productAddedToCart(keyboard);
 
 <br/>
 
-##### ```productNotAddedToCart()``` <a id="ecom-product-to-cart-fail"></a>
+##### ```productNotAddedToCart()``` <a id='ecom-product-to-cart-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -871,10 +986,9 @@ xenon.productNotAddedToCart(laptop);
 xenon.productNotAddedToCart(keyboard);
 ```
 
-
 <br/>
 
-#### Upsold Additional Products  <a id="ecom-upsell"></a>
+#### Upsold Additional Products  <a id='ecom-upsell'></a>
 Use this call to track when you upsell additional product(s) to customers.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -888,18 +1002,18 @@ final Xenon xenon = new Xenon();
 
 final String laptop = "Dell XPS";
 final String keyboard = "Apple Magic Keyboard";
+final String keyboardValue = "$139"; //optional
 
 // upsold a laptop
 xenon.upsold(laptop);
 // ...
-// upsold a keyboard
-xenon.upsold(keyboard);
+// upsold a keyboard with price
+xenon.upsold(keyboard, keyboardValue);
 ```
-
 
 <br/>
 
-##### ```upsellDismissed()``` <a id="ecom-upsell-fail"></a>
+##### ```upsellDismissed()``` <a id='ecom-upsell-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -908,18 +1022,18 @@ final Xenon xenon = new Xenon();
 
 final String laptop = "Dell XPS";
 final String keyboard = "Apple Magic Keyboard";
+final String keyboardValue = "$139"; //optional
 
-// Doesn"t add a laptop during upsell
+// Doesn't add a laptop during upsell
 xenon.upsellDismissed(laptop);
 // ...
-// Doesn"t add a keyboard during upsell
-xenon.upsellDismissed(keyboard);
+// Doesn't add a keyboard during upsell
+xenon.upsellDismissed(keyboard, keyboardValue);
 ```
-
 
 <br/>
 
-#### Customer Checks Out  <a id="ecom-checkout"></a>
+#### Customer Checks Out  <a id='ecom-checkout'></a>
 Use this call to track when your Customer is checking out.
 
 <br/>
@@ -936,7 +1050,7 @@ xenon.checkedOut();
 
 <br/>
 
-##### ```checkoutCanceled()``` <a id="ecom-checkout-fail"></a>
+##### ```checkoutCanceled()``` <a id='ecom-checkout-fail'></a>
 ```java
 import xenon.view.sdk.Xenon;
 
@@ -947,10 +1061,9 @@ xenon.checkoutCanceled();
 
 ```
 
-
 <br/>
 
-##### ```productRemoved()``` <a id="ecom-checkout-remove"></a>
+##### ```productRemoved()``` <a id='ecom-checkout-remove'></a>
 ```java
 import xenon.view.sdk.Xenon;
 
@@ -966,10 +1079,9 @@ xenon.productRemoved(laptop);
 xenon.productRemoved(keyboard);
 ```
 
-
 <br/>
 
-#### Customer Completes Purchase  <a id="ecom-purchase"></a>
+#### Customer Completes Purchase  <a id='ecom-purchase'></a>
 Use this call to track when your Customer completes a purchase.
 
 <br/>
@@ -981,33 +1093,34 @@ import xenon.view.sdk.Xenon;
 final Xenon xenon = new Xenon();
 
 final String method = "Stripe";
+final String price = "$2011"; // optional
 
-// Successful Purchase
-xenon.purchased(method);
+// Successful Purchase for $2011
+xenon.purchased(method, price);
 ```
-
 
 <br/>
 
-##### ```purchaseCanceled()``` <a id="ecom-purchase-fail"></a>
+##### ```purchaseCanceled()``` <a id='ecom-purchase-fail'></a>
 ```java
 import xenon.view.sdk.Xenon;
 
 final Xenon xenon = new Xenon();
 
 final String method = "Stripe"; // optional
+final String price = "$2011"; // optional
 
 //Customer cancels the purchase.
 xenon.purchaseCanceled();
 // -OR-
 xenon.purchaseCanceled(method);
-
+// -OR-
+xenon.purchaseCanceled(method, price);
 ```
-
 
 <br/>
 
-#### Purchase Shipping  <a id="ecom-promise-fulfillment"></a>
+#### Purchase Shipping  <a id='ecom-promise-fulfillment'></a>
 Use this call to track when your Customer receives a purchase.
 
 <br/>
@@ -1022,10 +1135,9 @@ final Xenon xenon = new Xenon();
 xenon.promiseFulfilled();
 ```
 
-
 <br/>
 
-##### ```promiseUnfulfilled(()``` <a id="ecom-promise-fulfillment-fail"></a>
+##### ```promiseUnfulfilled(()``` <a id='ecom-promise-fulfillment-fail'></a>
 ```java
 import xenon.view.sdk.Xenon;
 
@@ -1035,10 +1147,9 @@ final Xenon xenon = new Xenon();
 xenon.promiseUnfulfilled();
 ```
 
-
 <br/>
 
-#### Customer Keeps or Returns Product  <a id="ecom-product-outcome"></a>
+#### Customer Keeps or Returns Product  <a id='ecom-product-outcome'></a>
 Use this call to track if your Customer keeps the product.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -1060,10 +1171,9 @@ xenon.productKept(laptop);
 xenon.productKept(keyboard);
 ```
 
-
 <br/>
 
-##### ```productReturned()``` <a id="ecom-product-outcome-fail"></a>
+##### ```productReturned()``` <a id='ecom-product-outcome-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -1080,10 +1190,9 @@ xenon.productReturned(laptop);
 xenon.productReturned(keyboard);
 ```
 
-
 <br/>
 
-#### Referrals  <a id="ecom-referral"></a>
+#### Referrals  <a id='ecom-referral'></a>
 Use this call to track when customers refer someone to your offering.
 You can add a specifier string to the call to differentiate as follows:
 
@@ -1102,10 +1211,9 @@ final String detail = "Dell XPS";
 xenon.referral(kind, detail);
 ```
 
-
 <br/>
 
-##### ```referralDeclined()``` <a id="ecom-referral-fail"></a>
+##### ```referralDeclined()``` <a id='ecom-referral-fail'></a>
 > :memo: Note: You want to be consistent between success and failure and match the specifiers
 ```java
 import xenon.view.sdk.Xenon;
@@ -1119,12 +1227,11 @@ final String detail = "Dell XPS";
 xenon.referralDeclined(kind, detail);
 ```
 
-
 <br/>
 
 [back to top](#contents)
 
-### Customer Journey Milestones <a id="milestones"></a>
+### Customer Journey Milestones <a id='milestones'></a>
 
 As a customer interacts with your brand (via Advertisements, Marketing Website, Product/Service, etc.), they journey through a hierarchy of interactions.
 At the top level are business outcomes. In between Outcomes, they may achieve other milestones, such as interacting with content and features.
@@ -1136,13 +1243,13 @@ As of right now, Customer Journey Milestones break down into two categories:
 
 <br/>
 
-#### Feature Usage  <a id="feature-usage"></a>
-Features are your product/application/service"s traits or attributes that deliver value to your customers.
+#### Feature Usage  <a id='feature-usage'></a>
+Features are your product/application/service's traits or attributes that deliver value to your customers.
 They differentiate your offering in the market. Typically, they are made up of and implemented by functions.
 
 <br/>
 
-##### ```featureAttempted()``` <a id="feature-started"></a>
+##### ```featureAttempted()``` <a id='feature-started'></a>
 Use this function to indicate the start of feature usage.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1158,10 +1265,9 @@ xenon.featureAttempted(name, detail);
 xenon.featureAttempted(name);
 ```
 
-
 <br/>
 
-##### ```featureCompleted()``` <a id="feature-complete"></a>
+##### ```featureCompleted()``` <a id='feature-complete'></a>
 Use this function to indicate the successful completion of the feature.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1188,10 +1294,9 @@ xenon.featureCompleted(name, detail);
 xenon.featureCompleted(name);
 ```
 
-
 <br/>
 
-##### ```featureFailed()``` <a id="feature-failed"></a>
+##### ```featureFailed()``` <a id='feature-failed'></a>
 Use this function to indicate the unsuccessful completion of a feature being used (often in the exception handler).
 ```java
 import xenon.view.sdk.Xenon;
@@ -1217,14 +1322,13 @@ catch(err) {
 
 ```
 
-
 <br/>
 
 [back to top](#contents)
 
-#### Content Interaction  <a id="content-interaction"></a>
+#### Content Interaction  <a id='content-interaction'></a>
 Content is created assets/resources for your site/service/product.
-It can be static or dynamic. You will want to mark content that contributes to your Customer"s experience or buying decision.
+It can be static or dynamic. You will want to mark content that contributes to your Customer's experience or buying decision.
 Typical examples:
 * Blog
 * Blog posts
@@ -1239,7 +1343,7 @@ Typical examples:
 
 <br/>
 
-##### ```contentViewed()``` <a id="content-viewed"></a>
+##### ```contentViewed()``` <a id='content-viewed'></a>
 Use this function to indicate a view of specific content.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1255,10 +1359,9 @@ xenon.contentViewed(contentType, identifier);
 xenon.contentViewed(contentType);
 ```
 
-
 <br/>
 
-##### ```contentEdited()``` <a id="content-edited"></a>
+##### ```contentEdited()``` <a id='content-edited'></a>
 Use this function to indicate the editing of specific content.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1277,10 +1380,9 @@ xenon.contentEdited(contentType, identifier);
 xenon.contentEdited(contentType);
 ```
 
-
 <br/>
 
-##### ```contentCreated()``` <a id="content-created"></a>
+##### ```contentCreated()``` <a id='content-created'></a>
 Use this function to indicate the creation of specific content.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1296,10 +1398,9 @@ xenon.contentCreated(contentType, identifier);
 xenon.contentCreated(contentType);
 ```
 
-
 <br/>
 
-##### ```contentDeleted()``` <a id="content-deleted"></a>
+##### ```contentDeleted()``` <a id='content-deleted'></a>
 Use this function to indicate the deletion of specific content.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1315,10 +1416,27 @@ xenon.contentDeleted(contentType, identifier);
 xenon.contentDeleted(contentType);
 ```
 
+<br/>
+
+##### ```contentArchived()``` <a id='content-archived'></a>
+Use this function to indicate archiving specific content.
+```java
+import xenon.view.sdk.Xenon;
+
+final Xenon xenon = new Xenon();
+
+final String contentType = "Blog Comment";
+final String identifier = "how-to-install-xenon-view"; // optional
+
+//Customer archived their comment on a blog post 
+xenon.contentArchived(contentType, identifier);
+// -OR- 
+xenon.contentArchived(contentType);
+```
 
 <br/>
 
-##### ```contentRequested()``` <a id="content-requested"></a>
+##### ```contentRequested()``` <a id='content-requested'></a>
 Use this function to indicate the request for specific content.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1334,10 +1452,9 @@ xenon.contentRequested(contentType, identifier);
 xenon.contentRequested(contentType);
 ```
 
-
 <br/>
 
-##### ```contentSearched()``` <a id="content-searched"></a>
+##### ```contentSearched()``` <a id='content-searched'></a>
 Use this function to indicate when a user searches.
 ```java
 import xenon.view.sdk.Xenon;
@@ -1355,7 +1472,7 @@ xenon.contentSearched(contentType);
 
 [back to top](#contents)
 
-### Commit Points   <a id="commiting"></a>
+### Commit Points   <a id='commiting'></a>
 
 
 Business Outcomes and Customer Journey Milestones are tracked locally in memory until you commit them to the Xenon View system.
@@ -1374,7 +1491,6 @@ xenon.commit();
 // -OR-
 final Json json = xenon.commit().get();
 ```
-
 This call commits a customer journey to Xenon View for analysis.
 
 
@@ -1383,7 +1499,7 @@ This call commits a customer journey to Xenon View for analysis.
 
 [back to top](#contents)
 
-### Heartbeats   <a id="heartbeat"></a>
+### Heartbeats   <a id='heartbeat'></a>
 
 
 Business Outcomes and Customer Journey Milestones are tracked locally in memory until you commit them to the Xenon View system.
@@ -1405,8 +1521,6 @@ xenon.heartbeat();
 // -OR-
 final Json json = xenon.heartbeat().get();
 ```
-
-
 This call commits any uncommitted journeys to Xenon View for analysis and updates the last accessed time.
 
 
@@ -1414,7 +1528,7 @@ This call commits any uncommitted journeys to Xenon View for analysis and update
 
 [back to top](#contents)
 
-### Platforming  <a id="platforming"></a>
+### Platforming  <a id='platforming'></a>
 
 After you have initialized Xenon View, you can optionally specify platform details such as:
 
@@ -1453,7 +1567,6 @@ final String operatingSystemVersion = "12.0";
 final String operatingSystemName = "Android";
 xenon.platform(softwareVersion, deviceModel, operatingSystemName, operatingSystemVersion);
 ```
-
 <br/>
 
 [back to top](#contents)
@@ -1479,7 +1592,6 @@ final String[] variantNames = {variantName};
 // you can name variants for to outcomes
 xenon.variant(variantNames);
 ```
-
 This adds variant names to each outcome while the variant in play ([Saas](#saas)/[Ecom](#ecom)).
 Typically, you would name a variant once you know the active experiment for this Customer:
 ```java
@@ -1491,7 +1603,6 @@ xenon.init("<API KEY>");
 let experimentName = getExperiment();
 xenon.variant([experimentName]);
 ```
-
 <br/>
 
 #### `resetVariants()`
@@ -1503,12 +1614,11 @@ final Xenon xenon = new Xenon();
 // you can clear all variant names with the resetVariants method
 xenon.resetVariants();
 ```
-
 <br/>
 
 [back to top](#contents)
 
-### Customer Journey Grouping <a id="deanonymizing-journeys"></a>
+### Customer Journey Grouping <a id='deanonymizing-journeys'></a>
 
 
 Xenon View supports both anonymous and grouped (known) journeys.
@@ -1552,7 +1662,6 @@ JSONObject person = new JSONObject(){{
 }};
 xenon.deanonymize(person);
 ```
-
 This call deanonymizes every journey committed to a particular user.
 
 > **:memo: Note:** With journeys that span multiple platforms (e.g., Website->Android->API backend), you can group the Customer Journeys by deanonymizing each.
@@ -1562,14 +1671,14 @@ This call deanonymizes every journey committed to a particular user.
 
 [back to top](#contents)
 
-### Other Operations <a id="other"></a>
+### Other Operations <a id='other'></a>
 
 There are various other operations that you might find helpful:
 
 <br/>
 <br/>
 
-#### Error handling <a id="errors"></a>
+#### Error handling <a id='errors'></a>
 In the event of an API error when committing, the method returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 > **:memo: Note:** The default handling of this situation will restore the journey (appending newly added pageViews, events, etc.) for future committing. If you want to do something special, you can do so like this:
@@ -1589,7 +1698,7 @@ new Xenon().commit().exceptionally((err)->{
 
 <br/>
 
-#### Custom Milestones <a id="custom"></a>
+#### Custom Milestones <a id='custom'></a>
 
 You can add custom milestones if you need more than the current Customer Journey Milestones.
 
@@ -1608,17 +1717,16 @@ let name = "Query Database";
 let detail = "User Lookup";
 xenon.milestone(category, operation, name, detail);
 ```
-
 This call adds a custom milestone to the customer journey.
 
 <br/>
 
-#### Journey IDs <a id="cuuid"></a>
+#### Journey IDs <a id='cuuid'></a>
 Each Customer Journey has an ID akin to a session.
 After committing an Outcome, the ID remains the same to link all the Journeys.
 If you have a previous Customer Journey in progress and would like to append to that, you can get/set the ID.
 
->**:memo: Note:** For JavaScript, the Journey ID is a persistent session variable.
+>**:memo: Note:** For Java, the Journey ID is a persistent session variable.
 > Therefore, subsequent Outcomes will reuse the Journey ID if the Customer had a previous browser session.
 
 

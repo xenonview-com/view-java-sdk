@@ -462,6 +462,39 @@ public class XenonTest {
                     });
                 });
             });
+            Describe("when subscriptionPaused", () -> {
+                Describe("when no method", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionPaused("Silver Monthly");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"superOutcome\":\"Subscription Renewal\",\"outcome\":\"Paused - Silver Monthly\","
+                        ));
+                    });
+                });
+                Describe("when method", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionPaused("Silver Monthly", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"superOutcome\":\"Subscription Renewal\",\"outcome\":\"Paused - Silver Monthly\","
+                        ));
+                    });
+                });
+
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionPaused("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Renewal\",\"term\":\"Monthly\",\"outcome\":\"Paused - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
+            });
             Describe("when subscriptionUpsold", () -> {
                 Describe("when no method", () -> {
                     BeforeEach(() -> {
@@ -523,6 +556,38 @@ public class XenonTest {
                     It("then creates journey with outcome", () -> {
                         assertThat(journeyStr.get(), containsString(
                                 "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Upsold\",\"term\":\"Monthly\",\"outcome\":\"Declined - Silver\",\"timestamp\":"
+                        ));
+                    });
+                });
+            });
+            Describe("when subscriptionDownsell", () -> {
+                Describe("when no method", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionDownsell("Silver Monthly");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"superOutcome\":\"Subscription Upsold\",\"outcome\":\"Downsell - Silver Monthly\","
+                        ));
+                    });
+                });
+                Describe("when method", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionDownsell("Silver Monthly", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"superOutcome\":\"Subscription Upsold\",\"outcome\":\"Downsell - Silver Monthly\","
+                        ));
+                    });
+                });
+                Describe("when method and term/price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().subscriptionDownsell("Silver", "Monthly", "$1.99", "Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"method\":\"Stripe\",\"price\":\"$1.99\",\"superOutcome\":\"Subscription Upsold\",\"term\":\"Monthly\",\"outcome\":\"Downsell - Silver\",\"timestamp\":"
                         ));
                     });
                 });
@@ -594,25 +659,49 @@ public class XenonTest {
                 });
             });
             Describe("when upsold", () -> {
-                BeforeEach(() -> {
-                    unit.get().upsold("Dell XPS");
-                });
-                It("then creates journey with outcome", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"result\":\"success\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Upsold - Dell XPS\","
+                Describe("no frills", () -> {
+                    BeforeEach(() -> {
+                        unit.get().upsold("Dell XPS");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Upsold - Dell XPS\","
 
-                    ));
+                        ));
+                    });
+                });
+                Describe("with price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().upsold("Dell XPS", "$1499");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"price\":\"$1499\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Upsold - Dell XPS\","
+                        ));
+                    });
                 });
             });
             Describe("when upsellDismissed", () -> {
-                BeforeEach(() -> {
-                    unit.get().upsellDismissed("Dell XPS");
-                });
-                It("then creates journey with outcome", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"result\":\"fail\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Dismissed - Dell XPS\","
+                Describe("no frills", () -> {
+                    BeforeEach(() -> {
+                        unit.get().upsellDismissed("Dell XPS");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Dismissed - Dell XPS\","
 
-                    ));
+                        ));
+                    });
+                });
+                Describe("with price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().upsellDismissed("Dell XPS", "$1499");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"price\":\"$1499\",\"superOutcome\":\"Upsold Product\",\"outcome\":\"Dismissed - Dell XPS\","
+                        ));
+                    });
                 });
             });
             Describe("when checkedOut", () -> {
@@ -649,17 +738,41 @@ public class XenonTest {
                 });
             });
             Describe("when purchased", () -> {
-                BeforeEach(() -> {
-                    unit.get().purchased("Stripe");
-                });
-                It("then creates journey with outcome", () -> {
-                    assertThat(journeyStr.get(), containsString(
-                            "{\"result\":\"success\",\"superOutcome\":\"Customer Purchase\",\"outcome\":\"Purchase - Stripe\","
+                Describe("no frills", () -> {
+                    BeforeEach(() -> {
+                        unit.get().purchased("Stripe");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"superOutcome\":\"Customer Purchase\",\"outcome\":\"Purchase - Stripe\","
 
-                    ));
+                        ));
+                    });
+                });
+                Describe("has price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().purchased("Stripe", "$1.99");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"success\",\"price\":\"$1.99\",\"superOutcome\":\"Customer Purchase\",\"outcome\":\"Purchase - Stripe\","
+
+                        ));
+                    });
                 });
             });
             Describe("when purchaseCanceled", () -> {
+                Describe("with method and price", () -> {
+                    BeforeEach(() -> {
+                        unit.get().purchaseCanceled("Stripe", "$1.99");
+                    });
+                    It("then creates journey with outcome", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"result\":\"fail\",\"price\":\"$1.99\",\"superOutcome\":\"Customer Purchase\",\"outcome\":\"Canceled - Stripe\","
+
+                        ));
+                    });
+                });
                 Describe("with method", () -> {
                     BeforeEach(() -> {
                         unit.get().purchaseCanceled("Stripe");
@@ -877,6 +990,26 @@ public class XenonTest {
                     It("then has a journey with a page view", () -> {
                         assertThat(journeyStr.get(), containsString(
                                 "{\"action\":\"Deleted\",\"category\":\"Content\",\"type\":\"Blog Post\",\"timestamp\":"));
+                    });
+                });
+            });
+            Describe("when contentArchived", () -> {
+                Describe("when has identifier", () -> {
+                    BeforeEach(() -> {
+                        unit.get().contentArchived(contentType, identifier);
+                    });
+                    It("then has a journey with a page view", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"identifier\":\"how-to-install-xenon-view\",\"action\":\"Archived\",\"category\":\"Content\",\"type\":\"Blog Post\",\"timestamp\":"));
+                    });
+                });
+                Describe("when has no identifier", () -> {
+                    BeforeEach(() -> {
+                        unit.get().contentArchived(contentType);
+                    });
+                    It("then has a journey with a page view", () -> {
+                        assertThat(journeyStr.get(), containsString(
+                                "{\"action\":\"Archived\",\"category\":\"Content\",\"type\":\"Blog Post\",\"timestamp\":"));
                     });
                 });
             });
